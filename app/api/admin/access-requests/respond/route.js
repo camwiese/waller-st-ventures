@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "../../../../../lib/supabase/server";
 import { sendInviteEmail } from "../../../../../lib/notifications";
 import { isValidEmail, normalizeEmail } from "../../../../../lib/email";
+import { normalizeAppUrl } from "../../../../../lib/url";
 const TOKEN_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function GET(request) {
@@ -38,7 +39,7 @@ export async function GET(request) {
     return NextResponse.redirect(url);
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+  const baseUrl = normalizeAppUrl(process.env.NEXT_PUBLIC_APP_URL, request.nextUrl.origin);
   const adminUrl = new URL("/admin", baseUrl);
 
   if (action === "deny") {

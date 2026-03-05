@@ -2,6 +2,7 @@ import { Inter, Cormorant, Cormorant_Garamond } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "react-hot-toast";
 import "../styles/prose.css";
+import { normalizeAppUrl } from "../lib/url";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,23 +23,28 @@ const cormorantGaramond = Cormorant_Garamond({
   display: "swap",
 });
 
+const appUrl = normalizeAppUrl(
+  process.env.NEXT_PUBLIC_APP_URL,
+  "https://wallerstreetventures.com"
+);
+
 export const metadata = {
   title: {
-    default: "Waller St Ventures",
-    template: "%s | Waller St Ventures",
+    default: "Wall Street Ventures",
+    template: "%s | Wall Street Ventures",
   },
   description: "Early-stage venture capital investing in exceptional founders.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://wallerstreetventures.com"),
+  metadataBase: new URL(appUrl),
   openGraph: {
-    title: "Waller St Ventures",
+    title: "Wall Street Ventures",
     description: "Early-stage venture capital investing in exceptional founders.",
-    siteName: "Waller St Ventures",
+    siteName: "Wall Street Ventures",
     type: "website",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Waller St Ventures",
+    title: "Wall Street Ventures",
     description: "Early-stage venture capital investing in exceptional founders.",
     images: ["/og-image.png"],
   },

@@ -4,6 +4,7 @@ import { notifyAccessRequest } from "../../../../lib/notifications";
 import { getAdminEmails } from "../../../../lib/admin";
 import { isValidEmail, normalizeEmail } from "../../../../lib/email";
 import { randomUUID } from "crypto";
+import { normalizeAppUrl } from "../../../../lib/url";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -60,7 +61,10 @@ export async function POST(request) {
     if (!allowed) {
       // Not on list — record access request (or reuse existing pending) and notify recipients
       console.log("[request-otp] Access request path: email=" + normalizedEmail);
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://waller-street-ventures.vercel.app";
+      const baseUrl = normalizeAppUrl(
+        process.env.NEXT_PUBLIC_APP_URL,
+        "https://waller-street-ventures.vercel.app"
+      );
 
       const { data: existingPending } = await serviceClient
         .from("access_requests")
