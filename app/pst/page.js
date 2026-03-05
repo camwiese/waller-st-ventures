@@ -6,6 +6,13 @@ import { TAB_ORDER } from "../../constants/tabs";
 import { isAdminEmail } from "../../lib/admin";
 import { ROUTES } from "../../lib/routes";
 
+export const metadata = {
+  title: "Puget Sound Therapeutics",
+  openGraph: {
+    title: "Puget Sound Therapeutics | Waller Street Ventures",
+  },
+};
+
 const VALID_TABS = new Set(TAB_ORDER);
 
 export default async function HomePage({ searchParams }) {

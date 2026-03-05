@@ -74,11 +74,11 @@ Replace the default content with:
 
 ```html
 <div style="font-family: 'Inter', -apple-system, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 0;">
-  <div style="font-family: 'Cormorant', Georgia, serif; font-size: 18px; font-weight: 600; color: #1a3a2a; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 32px;">Waller Street Ventures</div>
+  <div style="font-family: 'Cormorant', Georgia, serif; font-size: 18px; font-weight: 600; color: #1e2a3a; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 32px;">Waller Street Ventures</div>
   <p style="font-size: 15px; line-height: 1.7; color: #3d3d38; margin: 0 0 20px 0;">Here's your verification code to access the PST data room:</p>
-  <div style="font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #1a3a2a; background: #f9f5ed; border: 1px solid #e2ddd3; border-radius: 6px; padding: 20px 24px; text-align: center; margin: 0 0 28px 0;">{{ .Token }}</div>
-  <p style="font-size: 13px; line-height: 1.6; color: #6b6b63; margin: 0 0 8px 0;">Enter this code on the login page. It expires in 10 minutes.</p>
-  <p style="font-size: 13px; line-height: 1.7; color: #6b6b63; margin: 28px 0 0 0;">If you have any trouble getting in, reply to this email or text/call Cameron at 360-318-4480.</p>
+  <div style="font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #1e2a3a; background: #edeae4; border: 1px solid #e2dfd8; border-radius: 6px; padding: 20px 24px; text-align: center; margin: 0 0 28px 0;">{{ .Token }}</div>
+  <p style="font-size: 13px; line-height: 1.6; color: #4a5568; margin: 0 0 8px 0;">Enter this code on the login page. It expires in 10 minutes.</p>
+  <p style="font-size: 13px; line-height: 1.7; color: #4a5568; margin: 28px 0 0 0;">If you have any trouble getting in, reply to this email or text/call Cameron at 360-318-4480.</p>
 </div>
 ```
 
@@ -88,11 +88,11 @@ Use the same template (with `type=email` for the token type):
 
 ```html
 <div style="font-family: 'Inter', -apple-system, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 0;">
-  <div style="font-family: 'Cormorant', Georgia, serif; font-size: 18px; font-weight: 600; color: #1a3a2a; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 32px;">Waller Street Ventures</div>
+  <div style="font-family: 'Cormorant', Georgia, serif; font-size: 18px; font-weight: 600; color: #1e2a3a; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 32px;">Waller Street Ventures</div>
   <p style="font-size: 15px; line-height: 1.7; color: #3d3d38; margin: 0 0 20px 0;">Here's your verification code to access the PST data room:</p>
-  <div style="font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #1a3a2a; background: #f9f5ed; border: 1px solid #e2ddd3; border-radius: 6px; padding: 20px 24px; text-align: center; margin: 0 0 28px 0;">{{ .Token }}</div>
-  <p style="font-size: 13px; line-height: 1.6; color: #6b6b63; margin: 0 0 8px 0;">Enter this code on the login page. It expires in 10 minutes.</p>
-  <p style="font-size: 13px; line-height: 1.7; color: #6b6b63; margin: 28px 0 0 0;">If you have any trouble getting in, reply to this email or text/call Cameron at 360-318-4480.</p>
+  <div style="font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #1e2a3a; background: #edeae4; border: 1px solid #e2dfd8; border-radius: 6px; padding: 20px 24px; text-align: center; margin: 0 0 28px 0;">{{ .Token }}</div>
+  <p style="font-size: 13px; line-height: 1.6; color: #4a5568; margin: 0 0 8px 0;">Enter this code on the login page. It expires in 10 minutes.</p>
+  <p style="font-size: 13px; line-height: 1.7; color: #4a5568; margin: 28px 0 0 0;">If you have any trouble getting in, reply to this email or text/call Cameron at 360-318-4480.</p>
 </div>
 ```
 

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Waller Street Ventures — SPV Data Room";
+export const alt = "Puget Sound Therapeutics — Waller Street Ventures";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -16,7 +16,7 @@ export default function Image() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1a3a2a",
+          background: "#1e2a3a",
           fontFamily: "Georgia, serif",
         }}
       >
@@ -25,36 +25,37 @@ export default function Image() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 22,
+            gap: 24,
           }}
         >
           <div
             style={{
-              fontSize: 52,
+              fontSize: 56,
               fontWeight: 600,
               color: "#fdfbf7",
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.02em",
             }}
           >
-            Waller Street Ventures
+            Puget Sound Therapeutics
           </div>
           <div
             style={{
-              width: 56,
+              width: 64,
               height: 3,
-              background: "#3a7d59",
+              background: "#c47d52",
               borderRadius: 2,
             }}
           />
           <div
             style={{
-              fontSize: 30,
-              color: "#94d4b0",
-              letterSpacing: "0.02em",
+              fontSize: 24,
+              fontWeight: 400,
+              color: "rgba(240, 237, 231, 0.55)",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
             }}
           >
-            SPV Data Room
+            Waller Street Ventures
           </div>
         </div>
       </div>
