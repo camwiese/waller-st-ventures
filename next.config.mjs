@@ -1,4 +1,4 @@
-// Validate required env vars at build time
+// Warn about missing env vars at build time (required at runtime for auth)
 const requiredEnvVars = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -6,7 +6,7 @@ const requiredEnvVars = [
 
 for (const key of requiredEnvVars) {
   if (!process.env[key]) {
-    throw new Error(`Missing required environment variable: ${key}`);
+    console.warn(`⚠ Missing environment variable: ${key} — auth features will not work until set.`);
   }
 }
 
