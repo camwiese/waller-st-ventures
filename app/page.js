@@ -61,7 +61,7 @@ export default function Homepage() {
       <div style={styles.container}>
         <div style={styles.imageWrapper}>
           <Image
-            src="/images/waller-st.jpg"
+            src="/images/waller-st-2.jpg"
             alt="Waller St Ventures"
             fill
             style={{ objectFit: "cover" }}
