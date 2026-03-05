@@ -314,7 +314,7 @@ function LoginForm() {
             fontFamily: SERIF,
             fontSize: 15,
             fontWeight: 600,
-            color: COLORS.green900,
+            color: COLORS.white,
             background: loading ? COLORS.gold600 : COLORS.gold500,
             border: "none",
             borderRadius: 3,

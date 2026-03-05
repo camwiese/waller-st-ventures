@@ -23,7 +23,7 @@ export default function CallSection({ isMobile, contactSettings = {}, sectionTit
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {hasSchedule ? (
-            <a href={contact.schedule_url} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: COLORS.green800, color: COLORS.cream50, padding: "14px 20px", borderRadius: 6, fontFamily: SANS, fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+            <a href={contact.schedule_url} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: COLORS.gold500, color: COLORS.white, padding: "14px 20px", borderRadius: 3, fontFamily: SANS, fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
               Book a Call
             </a>
           ) : (
@@ -32,7 +32,7 @@ export default function CallSection({ isMobile, contactSettings = {}, sectionTit
             </div>
           )}
           {smsHref ? (
-            <a href={smsHref} style={{ display: "block", background: COLORS.green800, color: COLORS.cream50, padding: "14px 20px", borderRadius: 6, fontFamily: SANS, fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+            <a href={smsHref} style={{ display: "block", background: COLORS.gold500, color: COLORS.white, padding: "14px 20px", borderRadius: 3, fontFamily: SANS, fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
               Text Me — {displayPhone}
             </a>
           ) : null}

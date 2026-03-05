@@ -84,7 +84,7 @@ export default function TermsSection({ isMobile, content, sectionTitle }) {
         {roundDetails.map((t, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: i < roundDetails.length - 1 ? `1px solid ${COLORS.border}` : "none", background: i % 2 === 0 ? COLORS.cream50 : COLORS.white }}>
             <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text500, fontWeight: 500 }}>{t.l}</span>
-            <span style={{ fontFamily: SANS, fontSize: 14, color: t.highlight ? COLORS.green800 : COLORS.text900, fontWeight: 600 }}>{t.v}</span>
+            <span style={{ fontFamily: SANS, fontSize: 14, color: t.highlight ? COLORS.green700 : COLORS.text900, fontWeight: 600 }}>{t.v}</span>
           </div>
         ))}
       </div>

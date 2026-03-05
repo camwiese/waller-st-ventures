@@ -26,7 +26,7 @@ const styles = {
     overflow: "hidden",
     borderRadius: 3,
     marginBottom: "0.9rem",
-    boxShadow: "0 4px 24px rgba(44, 62, 45, 0.08)",
+    boxShadow: "0 4px 24px rgba(30, 42, 58, 0.08)",
     position: "relative",
   },
   brand: {
@@ -35,14 +35,14 @@ const styles = {
     fontSize: "1.1rem",
     letterSpacing: "0.25em",
     textTransform: "uppercase",
-    color: "#2C3E2D",
+    color: "#1e2a3a",
     textAlign: "center",
     margin: 0,
   },
   divider: {
     width: 36,
     height: 2,
-    backgroundColor: "#e8b630",
+    backgroundColor: "#c47d52",
     borderRadius: 1,
     margin: "0.75rem 0",
   },
@@ -53,7 +53,7 @@ const styles = {
     letterSpacing: "0.12em",
   },
   contactLink: {
-    color: "#6B7C6C",
+    color: "#c47d52",
     textDecoration: "none",
   },
 };

@@ -1,0 +1,288 @@
+/*
+ * ============================================================
+ *  CW VENTURES — BRAND STYLE GUIDE
+ *  Soft Navy Palette
+ *  Last updated: March 2026
+ * ============================================================
+ *
+ *  This file defines all design tokens and component styles
+ *  for the CW Ventures data room, login pages, and emails.
+ *  Import or reference this in your global stylesheet.
+ *
+ * ============================================================
+ */
+
+
+/* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+
+:root {
+
+  /* Core palette */
+  --color-primary:        #1e2a3a;   /* Navy — sidebar bg, headings, footer */
+  --color-secondary:      #4a5568;   /* Slate — secondary text on dark bg */
+  --color-accent:         #c47d52;   /* Terracotta — ALL buttons, links, dividers, rules, active states */
+  --color-accent-hover:   #b06d42;   /* Terracotta dark — hover/pressed states */
+  --color-surface:        #edeae4;   /* Warm grey — table headers, card bgs, input bgs */
+  --color-background:     #fdfbf7;   /* Off-white — page background */
+
+  /* Sidebar */
+  --sidebar-bg:           #1e2a3a;
+  --sidebar-text:         #f0ede7;
+  --sidebar-text-muted:   rgba(240, 237, 231, 0.55);
+  --sidebar-active-bg:    rgba(240, 237, 231, 0.12);
+
+  /* Typography */
+  --font-serif:           var(--font-serif-garamond), 'Cormorant Garamond', Georgia, serif;
+  --font-sans:            var(--font-sans), 'Inter', sans-serif;
+  --text-heading:         #1e2a3a;
+  --text-body:            #3d3d38;
+  --text-muted:           #8a95a5;
+
+  /* Borders & controls */
+  --border-light:         #e2dfd8;
+  --radius:               3px;
+}
+
+
+/* ─── TYPOGRAPHY ────────────────────────────────────────────── */
+
+/*
+ * Headings:  var(--font-serif) — Cormorant Garamond
+ * Body:      var(--font-sans)  — Inter
+ *
+ * Scale:
+ *   H1 (page title)    42px   font-weight: 400   letter-spacing: -0.3px   color: var(--text-heading)
+ *   H2 (section)       28px   font-weight: 400   color: var(--text-heading)
+ *   H3 (subsection)    22px   font-weight: 500   color: var(--text-heading)
+ *   Body               15px   font-weight: 400   line-height: 1.8   color: var(--text-body)
+ *   Small / meta       13px   line-height: 1.6   color: var(--text-body)
+ *   Label / caption    11px   letter-spacing: 2.5px   text-transform: uppercase   color: var(--text-muted)
+ *   Section label      10px   letter-spacing: 2px   text-transform: uppercase   font-weight: 600   color: var(--color-accent)
+ *
+ * Page labels (e.g. "PUGET SOUND THERAPEUTICS" above a page title):
+ *   font-family: var(--font-sans)
+ *   font-size: 11px
+ *   letter-spacing: 2.5px
+ *   text-transform: uppercase
+ *   color: var(--color-accent)
+ *
+ * Accent horizontal rule below H1:
+ *   width: 40px
+ *   height: 2.5px
+ *   background: var(--color-accent)
+ *   margin-top: 12px
+ */
+
+
+/* ─── BUTTONS ───────────────────────────────────────────────── */
+
+/*
+ * Every button and CTA across the entire product — data room,
+ * login pages, emails — uses the same terracotta accent color.
+ *
+ * Primary (filled):
+ *   background:    var(--color-accent)        #c47d52
+ *   color:         #ffffff
+ *   border:        none
+ *   border-radius: var(--radius)              3px
+ *   padding:       12px 32px
+ *   font-family:   var(--font-sans)
+ *   font-size:     13px
+ *   font-weight:   500
+ *   hover:         var(--color-accent-hover)  #b06d42
+ *
+ * Ghost / outline (sidebar "Schedule a Call"):
+ *   background:    transparent
+ *   border:        1px solid rgba(240, 237, 231, 0.25)
+ *   color:         var(--sidebar-text)
+ *   border-radius: var(--radius)              3px
+ *   padding:       13px 0  (full-width)
+ *   hover:         background rgba(240, 237, 231, 0.08)
+ *
+ * Full-width variant (login page "Continue", email CTA):
+ *   Same as primary, but width: 100% and padding: 14px 0
+ *   font-size: 14px; font-weight: 600
+ */
+
+
+/* ─── LINKS ─────────────────────────────────────────────────── */
+
+/*
+ * color:           var(--color-accent)
+ * text-decoration: none
+ * hover:           text-decoration underline
+ */
+
+
+/* ─── DIVIDERS & HORIZONTAL RULES ───────────────────────────── */
+
+/*
+ * All decorative dividers and rules use the accent color:
+ *   background/border-color: var(--color-accent)   #c47d52
+ *
+ * Accent rule (below page titles):
+ *   width: 40px; height: 2.5px; border-radius: 2px
+ *
+ * Section dividers (between content blocks):
+ *   border-top: 1px solid var(--border-light)
+ *
+ * Blockquote left border (callout text):
+ *   border-left: 3px solid var(--color-accent)
+ *   padding-left: 16px
+ */
+
+
+/* ─── TABLES ────────────────────────────────────────────────── */
+
+/*
+ * Used for investment terms, round details, scenario models, etc.
+ *
+ * Outer container:
+ *   border: 1px solid var(--border-light)
+ *   border-radius: var(--radius)             3px
+ *   overflow: hidden
+ *
+ * Table header row:
+ *   background:    var(--color-surface)       #edeae4
+ *   padding:       14px 24px
+ *   font-family:   var(--font-sans)
+ *   font-size:     11px
+ *   font-weight:   600
+ *   letter-spacing: 1.5px
+ *   text-transform: uppercase
+ *   color:         var(--text-body)           #3d3d38
+ *
+ * Table body rows:
+ *   background:    #ffffff
+ *   padding:       16px 24px
+ *   border-bottom: 1px solid var(--border-light)
+ *
+ * Row labels (left column):
+ *   font-family:   var(--font-sans)
+ *   font-size:     15px
+ *   font-weight:   400
+ *   color:         var(--text-body)
+ *
+ * Row values (right column):
+ *   font-family:   var(--font-sans)
+ *   font-size:     15px
+ *   font-weight:   600
+ *   color:         var(--text-heading)        #1e2a3a
+ *   text-align:    right
+ *
+ * Accent values (monetary amounts, key figures):
+ *   color:         var(--color-accent)        #c47d52
+ *   font-weight:   600
+ *
+ * Alternating row tint (optional):
+ *   every other row: background rgba(237, 234, 228, 0.3)
+ *
+ * Section subheader within a table (e.g. "SPV TERMS"):
+ *   Same style as table header but with:
+ *   color: var(--color-accent)
+ *   font-size: 11px
+ *   letter-spacing: 2px
+ *   margin-top: 24px
+ */
+
+
+/* ─── SIDEBAR / NAVIGATION ──────────────────────────────────── */
+
+/*
+ * Background:      var(--sidebar-bg)          #1e2a3a
+ * Width:           264px
+ *
+ * Brand name:
+ *   font-family:   var(--font-serif)
+ *   font-size:     22px
+ *   font-weight:   500
+ *   letter-spacing: 1.5px
+ *   text-transform: uppercase
+ *   color:         var(--sidebar-text)
+ *
+ * Deal name:
+ *   font-family:   var(--font-sans)
+ *   font-size:     12px
+ *   font-weight:   600
+ *   letter-spacing: 1.8px
+ *   text-transform: uppercase
+ *   color:         var(--sidebar-text)
+ *
+ * Deal metadata (e.g. "Seed Round · SPV Data Room"):
+ *   font-size:     13px
+ *   color:         var(--color-accent)
+ *
+ * Nav items:
+ *   font-size:     14px
+ *   font-weight:   400
+ *   color:         var(--sidebar-text)
+ *   padding:       11px 16px
+ *   border-radius: var(--radius)
+ *
+ * Nav active:
+ *   background:    var(--sidebar-active-bg)
+ *   font-weight:   500
+ *   color:         #ffffff
+ *
+ * Nav inactive:
+ *   color:         var(--sidebar-text-muted)
+ *
+ * Section label (e.g. "SUPPORTING DOCUMENTS"):
+ *   font-size:     10px
+ *   letter-spacing: 2px
+ *   text-transform: uppercase
+ *   font-weight:   600
+ *   color:         var(--color-accent)
+ */
+
+
+/* ─── FORM INPUTS ───────────────────────────────────────────── */
+
+/*
+ * Used on login page and anywhere inputs appear.
+ *
+ *   background:    #ffffff
+ *   border:        1px solid var(--border-light)
+ *   border-radius: var(--radius)              3px
+ *   padding:       12px 16px
+ *   font-family:   var(--font-sans)
+ *   font-size:     15px
+ *   color:         var(--text-body)
+ *   placeholder:   var(--text-muted)
+ *
+ *   focus:
+ *     border-color: var(--color-accent)
+ *     outline: none
+ *     box-shadow: 0 0 0 2px rgba(196, 125, 82, 0.15)
+ */
+
+
+/* ─── BLOCKQUOTE / CALLOUT ──────────────────────────────────── */
+
+/*
+ * Used for key summary lines like "PST is raising a $5M seed round..."
+ *
+ *   border-left:   3px solid var(--color-accent)
+ *   padding-left:  20px
+ *   font-family:   var(--font-sans)
+ *   font-size:     17px
+ *   font-weight:   600
+ *   color:         var(--text-heading)
+ *   line-height:   1.6
+ */
+
+
+/* ─── BULLET LISTS ──────────────────────────────────────────── */
+
+/*
+ * Used in SPV terms, FAQ answers, etc.
+ *
+ *   list-style:    disc
+ *   padding-left:  24px
+ *   font-size:     15px
+ *   line-height:   1.8
+ *   color:         var(--text-body)
+ *   margin-bottom: 8px per item
+ *
+ * The bullet color should match var(--text-body).
+ */

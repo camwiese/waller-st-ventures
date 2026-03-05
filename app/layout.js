@@ -30,21 +30,21 @@ const appUrl = normalizeAppUrl(
 
 export const metadata = {
   title: {
-    default: "Wall Street Ventures",
-    template: "%s | Wall Street Ventures",
+    default: "Waller Street Ventures",
+    template: "%s | Waller Street Ventures",
   },
   description: "Early-stage venture capital investing in exceptional founders.",
   metadataBase: new URL(appUrl),
   openGraph: {
-    title: "Wall Street Ventures",
+    title: "Waller Street Ventures",
     description: "Early-stage venture capital investing in exceptional founders.",
-    siteName: "Wall Street Ventures",
+    siteName: "Waller Street Ventures",
     type: "website",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wall Street Ventures",
+    title: "Waller Street Ventures",
     description: "Early-stage venture capital investing in exceptional founders.",
     images: ["/og-image.png"],
   },

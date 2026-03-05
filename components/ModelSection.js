@@ -170,8 +170,8 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
         <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.green700, marginBottom: 6 }}>How much are you considering investing?</div>
         <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <span style={{ fontFamily: SERIF, fontSize: isMobile ? 36 : 44, fontWeight: 600, color: COLORS.green800, lineHeight: 1 }}>$</span>
-            <input type="text" inputMode="numeric" value={investAmount === 0 ? "" : investAmount.toLocaleString()} onChange={handleInvestChange} onBlur={handleInvestBlur} placeholder="50,000" aria-label="Investment amount" style={{ fontFamily: SERIF, fontSize: isMobile ? 36 : 44, fontWeight: 600, color: COLORS.green800, background: "transparent", border: "none", outline: "none", width: isMobile ? "100%" : 160, paddingBottom: 4, lineHeight: 1 }} />
+            <span style={{ fontFamily: SERIF, fontSize: isMobile ? 36 : 44, fontWeight: 600, color: COLORS.text900, lineHeight: 1 }}>$</span>
+            <input type="text" inputMode="numeric" value={investAmount === 0 ? "" : investAmount.toLocaleString()} onChange={handleInvestChange} onBlur={handleInvestBlur} placeholder="50,000" aria-label="Investment amount" style={{ fontFamily: SERIF, fontSize: isMobile ? 36 : 44, fontWeight: 600, color: COLORS.text900, background: "transparent", border: "none", outline: "none", width: isMobile ? "100%" : 160, paddingBottom: 4, lineHeight: 1 }} />
           </div>
           <div style={{ width: isMobile ? 150 : 130, height: 2, background: COLORS.fern, marginTop: -2 }} />
         </div>
@@ -182,7 +182,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
         <div style={STEP_LABEL}>YOUR SEED INVESTMENT</div>
         <div style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 3, overflow: "hidden" }}>
           {[{ l: "SAFE Valuation Cap", v: "$25,000,000" }, { l: "Your Investment", v: fmtFull(amt) }, { l: "Your Ownership at Seed", v: fmtPct(seedOwnership), bold: true }].map((r, i) => (
-            <div key={i} style={staticRow(i, 3)}><span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700 }}>{r.l}</span><span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.green800, fontWeight: r.bold ? 700 : 600 }}>{r.v}</span></div>
+            <div key={i} style={staticRow(i, 3)}><span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700 }}>{r.l}</span><span style={{ fontFamily: SANS, fontSize: 14, color: r.bold ? COLORS.green700 : COLORS.text900, fontWeight: r.bold ? 700 : 600 }}>{r.v}</span></div>
           ))}
         </div>
       </div>
@@ -209,7 +209,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
           ].map((r, i) => (
             <div key={`a-${i}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 20px", borderBottom: `1px solid ${COLORS.border}`, background: i % 2 === 0 ? COLORS.cream50 : COLORS.white }}>
               <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700 }}>{r.l}</span>
-              <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.green800, fontWeight: 600 }}>{r.v}</span>
+              <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text900, fontWeight: 600 }}>{r.v}</span>
             </div>
           ))}
 
@@ -272,7 +272,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
                   ].map((row, i) => (
                     <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "11px 20px", borderBottom: i < 3 ? `1px solid ${COLORS.border}` : "none", background: i % 2 === 0 ? COLORS.cream50 : COLORS.white }}>
                       <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700 }}>{row.l}</span>
-                      <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.green800, fontWeight: 600 }}>{row.v}</span>
+                      <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.green700, fontWeight: 600 }}>{row.v}</span>
                     </div>
                   ))}
                 </div>
@@ -282,7 +282,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
               <div style={{ padding: "14px 20px", borderBottom: `1px solid ${COLORS.border}`, fontFamily: SANS, fontSize: 13, fontWeight: 600, color: COLORS.text900 }}>Custom</div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "11px 20px", borderBottom: `1px solid ${COLORS.border}`, background: COLORS.cream50 }}>
                 <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700 }}>Exit Valuation‡</span>
-                <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.green800, fontWeight: 600, display: "inline-flex", alignItems: "center" }}>
+                <span style={{ fontFamily: SANS, fontSize: 14, color: COLORS.green700, fontWeight: 600, display: "inline-flex", alignItems: "center" }}>
                   <span style={{ display: "inline-flex", alignItems: "center", borderBottom: `1px solid ${COLORS.green600}`, paddingBottom: 2 }}>
                     <span style={{ marginRight: 2 }}>$</span>
                     <input
@@ -294,7 +294,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
                       onBlur={handleCustomExitBlur}
                       placeholder="750M"
                       aria-label="Custom exit valuation"
-                      style={{ width: 70, background: "transparent", border: "none", outline: "none", textAlign: "right", fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.green800 }}
+                      style={{ width: 70, background: "transparent", border: "none", outline: "none", textAlign: "right", fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.green700 }}
                     />
                   </span>
                 </span>
@@ -306,7 +306,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
               ].map((row, i) => (
                 <div key={row.l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "11px 20px", borderBottom: i < 2 ? `1px solid ${COLORS.border}` : "none", background: i % 2 === 0 ? COLORS.white : COLORS.cream50 }}>
                   <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700 }}>{row.l}</span>
-                  <span style={{ fontFamily: SANS, fontSize: 14, color: row.muted ? COLORS.text500 : COLORS.green800, fontWeight: row.muted ? 500 : 600 }}>{row.v}</span>
+                  <span style={{ fontFamily: SANS, fontSize: 14, color: row.muted ? COLORS.text500 : COLORS.green700, fontWeight: row.muted ? 500 : 600 }}>{row.v}</span>
                 </div>
               ))}
             </div>

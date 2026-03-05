@@ -7,7 +7,7 @@
   font-family: var(--font-serif), Georgia, serif;
   font-size: 24px;
   font-weight: 600;
-  color: #1a1a18;
+  color: #1e2a3a;
   margin: 32px 0 20px 0;
   letter-spacing: -0.01em;
 }
@@ -20,7 +20,7 @@
   font-family: var(--font-serif), Georgia, serif;
   font-size: 22px;
   font-weight: 600;
-  color: #1a1a18;
+  color: #1e2a3a;
   margin: 28px 0 16px 0;
   letter-spacing: -0.01em;
 }
@@ -38,7 +38,7 @@
 }
 
 .cms-prose a {
-  color: #2d6144;
+  color: #c47d52;
   text-decoration: underline;
 }
 
@@ -57,10 +57,10 @@
 }
 
 .cms-prose blockquote {
-  border-left: 4px solid #3a7d59;
+  border-left: 4px solid #c47d52;
   margin: 0 0 28px 0;
   padding-left: 16px;
-  color: #6b6b63;
+  color: #4a5568;
 }
 
 .cms-prose strong {
@@ -81,7 +81,7 @@
 }
 
 .cms-prose sup a {
-  color: #2d6144;
+  color: #c47d52;
   text-decoration: none;
   font-weight: 400;
 }
@@ -93,7 +93,7 @@
   top: -0.65em;
   text-decoration: none;
   display: inline-block;
-  color: #2d6144;
+  color: #c47d52;
   font-weight: 400;
 }
 
@@ -124,7 +124,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #e2ddd3;
+  border: 1px solid #e2dfd8;
   border-radius: 3px;
   margin: 24px 0;
   font-size: 12px;
@@ -136,12 +136,12 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 10px;
   font-weight: 700;
-  color: #8a8a82;
+  color: #8a95a5;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 12px 14px;
-  background: #f9f5ed;
-  border-bottom: 2px solid #e2ddd3;
+  background: #edeae4;
+  border-bottom: 2px solid #e2dfd8;
   text-align: center;
 }
 
@@ -151,7 +151,7 @@
   line-height: 1.5;
   color: #3d3d38;
   padding: 10px 14px;
-  border-bottom: 1px solid #e2ddd3;
+  border-bottom: 1px solid #e2dfd8;
   vertical-align: middle;
   text-align: center;
   word-wrap: break-word;
@@ -160,7 +160,7 @@
 
 .cms-prose td:first-child {
   text-align: left;
-  border-right: 2px solid #e2ddd3;
+  border-right: 2px solid #e2dfd8;
 }
 
 .cms-prose th:first-child {
@@ -209,7 +209,7 @@
 }
 
 .cms-prose-sm a {
-  color: #2d6144;
+  color: #c47d52;
   text-decoration: underline;
 }
 
@@ -236,7 +236,7 @@
 }
 
 .cms-prose-sm sup a {
-  color: #2d6144;
+  color: #c47d52;
   text-decoration: none;
   font-weight: 400;
 }
@@ -248,7 +248,7 @@
   top: -0.65em;
   text-decoration: none;
   display: inline-block;
-  color: #2d6144;
+  color: #c47d52;
   font-weight: 400;
 }
 
@@ -272,7 +272,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #e2ddd3;
+  border: 1px solid #e2dfd8;
   border-radius: 3px;
   margin: 16px 0;
   font-size: 13px;
@@ -285,12 +285,12 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 10px;
   font-weight: 700;
-  color: #8a8a82;
+  color: #8a95a5;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 14px 20px;
-  background: #f9f5ed;
-  border-bottom: 2px solid #e2ddd3;
+  background: #edeae4;
+  border-bottom: 2px solid #e2dfd8;
   text-align: left;
 }
 
@@ -300,7 +300,7 @@
   line-height: 1.6;
   color: #3d3d38;
   padding: 12px 20px;
-  border-bottom: 1px solid #e2ddd3;
+  border-bottom: 1px solid #e2dfd8;
   vertical-align: top;
   word-wrap: break-word;
   overflow-wrap: break-word;
