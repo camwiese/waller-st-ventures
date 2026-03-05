@@ -1,0 +1,48 @@
+{
+  "name": "waller-street-ventures",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "verify": "npm run lint && npm run test",
+    "setup:check": "node scripts/setup-check.js",
+    "test:watch": "vitest",
+    "test:auth": "node scripts/test-auth-endpoints.js",
+    "cms:migrate-content": "node scripts/migrate-existing-content.js",
+    "cms:seed-content": "node scripts/seed-content.js",
+    "cms:replicate-faq": "node scripts/replicate-faq-content.js"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@sparticuz/chromium": "^123.0.1",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.97.0",
+    "@tiptap/extension-link": "^3.7.2",
+    "@tiptap/extension-superscript": "^3.7.2",
+    "@tiptap/extension-table": "^3.20.0",
+    "@tiptap/extension-table-cell": "^3.20.0",
+    "@tiptap/extension-table-header": "^3.20.0",
+    "@tiptap/extension-table-row": "^3.20.0",
+    "@tiptap/pm": "^3.7.2",
+    "@tiptap/react": "^3.7.2",
+    "@tiptap/starter-kit": "^3.7.2",
+    "@vercel/analytics": "^1.6.1",
+    "next": "16.1.6",
+    "puppeteer-core": "^22.15.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-hot-toast": "^2.6.0",
+    "sanitize-html": "^2.17.0"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "vitest": "^4.0.18"
+  }
+}

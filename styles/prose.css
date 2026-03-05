@@ -1,0 +1,372 @@
+.cms-prose {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.cms-prose h2 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a18;
+  margin: 32px 0 20px 0;
+  letter-spacing: -0.01em;
+}
+
+.cms-prose h2:first-child {
+  margin-top: 0;
+}
+
+.cms-prose h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1a1a18;
+  margin: 28px 0 16px 0;
+  letter-spacing: -0.01em;
+}
+
+.cms-prose h3:first-child {
+  margin-top: 0;
+}
+
+.cms-prose p {
+  font-family: var(--font-sans), "Inter", sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #3d3d38;
+  margin: 0 0 20px 0;
+}
+
+.cms-prose a {
+  color: #2d6144;
+  text-decoration: underline;
+}
+
+.cms-prose ul,
+.cms-prose ol {
+  font-family: var(--font-sans), "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #3d3d38;
+  margin: 0 0 16px 0;
+  padding-left: 20px;
+}
+
+.cms-prose li {
+  margin-bottom: 8px;
+}
+
+.cms-prose blockquote {
+  border-left: 4px solid #3a7d59;
+  margin: 0 0 28px 0;
+  padding-left: 16px;
+  color: #6b6b63;
+}
+
+.cms-prose strong {
+  font-weight: 600;
+}
+
+.cms-prose em {
+  font-style: italic;
+}
+
+.cms-prose sup {
+  font-size: 0.55em;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.65em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cms-prose sup a {
+  color: #2d6144;
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.cms-prose a[href^="#ref-"] {
+  font-size: 0.55em;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.65em;
+  text-decoration: none;
+  display: inline-block;
+  color: #2d6144;
+  font-weight: 400;
+}
+
+.cms-prose sup a[href^="#ref-"] {
+  font-size: inherit;
+  position: static;
+  display: inline;
+  vertical-align: baseline;
+  top: auto;
+}
+
+.cms-prose a[href^="#ref-"] sup {
+  font-size: inherit;
+  position: static;
+  display: inline;
+  vertical-align: baseline;
+  top: auto;
+}
+
+.cms-prose-table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cms-prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #e2ddd3;
+  border-radius: 3px;
+  margin: 24px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.cms-prose th {
+  font-family: var(--font-sans), "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a8a82;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 14px;
+  background: #f9f5ed;
+  border-bottom: 2px solid #e2ddd3;
+  text-align: center;
+}
+
+.cms-prose td {
+  font-family: var(--font-sans), "Inter", sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #3d3d38;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2ddd3;
+  vertical-align: middle;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.cms-prose td:first-child {
+  text-align: left;
+  border-right: 2px solid #e2ddd3;
+}
+
+.cms-prose th:first-child {
+  text-align: left;
+}
+
+.cms-prose tbody tr:nth-child(odd) {
+  background: #fdfbf7;
+}
+
+.cms-prose tbody tr:nth-child(even) {
+  background: #ffffff;
+}
+
+.cms-prose tr:last-child td {
+  border-bottom: none;
+}
+
+.cms-prose th p,
+.cms-prose td p {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  font-family: inherit;
+}
+
+.cms-prose > *:last-child {
+  margin-bottom: 0;
+}
+
+.cms-prose-sm {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.cms-prose-sm p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #3d3d38;
+  margin: 0 0 12px 0;
+}
+
+.cms-prose-sm p:last-child {
+  margin-bottom: 0;
+}
+
+.cms-prose-sm a {
+  color: #2d6144;
+  text-decoration: underline;
+}
+
+.cms-prose-sm ul,
+.cms-prose-sm ol {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #3d3d38;
+  margin: 0 0 12px 0;
+  padding-left: 20px;
+}
+
+.cms-prose-sm li {
+  margin-bottom: 6px;
+}
+
+.cms-prose-sm sup {
+  font-size: 0.55em;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.65em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cms-prose-sm sup a {
+  color: #2d6144;
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.cms-prose-sm a[href^="#ref-"] {
+  font-size: 0.55em;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.65em;
+  text-decoration: none;
+  display: inline-block;
+  color: #2d6144;
+  font-weight: 400;
+}
+
+.cms-prose-sm sup a[href^="#ref-"] {
+  font-size: inherit;
+  position: static;
+  display: inline;
+  vertical-align: baseline;
+  top: auto;
+}
+
+.cms-prose-sm a[href^="#ref-"] sup {
+  font-size: inherit;
+  position: static;
+  display: inline;
+  vertical-align: baseline;
+  top: auto;
+}
+
+.cms-prose-sm table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #e2ddd3;
+  border-radius: 3px;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.cms-prose-sm th {
+  font-family: var(--font-sans), "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a8a82;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 14px 20px;
+  background: #f9f5ed;
+  border-bottom: 2px solid #e2ddd3;
+  text-align: left;
+}
+
+.cms-prose-sm td {
+  font-family: var(--font-sans), "Inter", sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #3d3d38;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e2ddd3;
+  vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.cms-prose-sm tbody tr:nth-child(odd) {
+  background: #fdfbf7;
+}
+
+.cms-prose-sm tbody tr:nth-child(even) {
+  background: #ffffff;
+}
+
+.cms-prose-sm tr:last-child td {
+  border-bottom: none;
+}
+
+.cms-prose-sm th p,
+.cms-prose-sm td p {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  font-family: inherit;
+}
+
+.cms-prose-sm strong {
+  font-weight: 600;
+}
+
+.cms-prose-sm em {
+  font-style: italic;
+}
+
+.cms-prose-disclosure p {
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
+  font-style: inherit;
+  font-family: inherit;
+  margin: 0 0 8px 0;
+}
+
+.cms-prose-disclosure p:last-child {
+  margin-bottom: 0;
+}
+
+.cms-prose-disclosure strong {
+  font-weight: 600;
+}
+
+.cms-prose-disclosure em {
+  font-style: italic;
+}
+
+@media (max-width: 839px) {
+  .cms-prose table {
+    font-size: 10px;
+  }
+  .cms-prose th {
+    font-size: 8px;
+    padding: 8px 6px;
+    letter-spacing: 0.03em;
+  }
+  .cms-prose td {
+    font-size: 10px;
+    padding: 6px 6px;
+  }
+}
