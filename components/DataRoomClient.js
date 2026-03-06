@@ -223,7 +223,7 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
       {isAdmin && <AdminTopNav />}
       <div style={{ display: "flex", height: shellHeight, overflow: "hidden" }}>
       {isMobile && (
-        <div role="tablist" aria-label="Data room sections" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: COLORS.green900, zIndex: 1000, borderTop: "1px solid rgba(240, 237, 231, 0.15)", display: "flex", alignItems: "center", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        <div role="tablist" aria-label="Data room sections" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: COLORS.green900, zIndex: 1000, borderTop: "1px solid rgba(238, 233, 223, 0.15)", display: "flex", alignItems: "center", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
           <div ref={bottomNavRef} style={{ display: "flex", gap: 6, padding: "0 12px", overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", width: "100%", height: 64, alignItems: "center" }}>
             {sections.map((item) => {
               const isActive = activeTab === item.id;
@@ -247,7 +247,7 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
                   fontFamily: SANS,
                   fontSize: 13,
                   fontWeight: isActive ? 600 : 400,
-                  background: isActive ? "rgba(240, 237, 231, 0.12)" : showHover ? "rgba(240, 237, 231, 0.08)" : "transparent",
+                  background: isActive ? "rgba(238, 233, 223, 0.12)" : showHover ? "rgba(238, 233, 223, 0.08)" : "transparent",
                   color: isActive ? "#ffffff" : showHover ? COLORS.green200 : COLORS.green300,
                   transition: "background 0.15s ease, color 0.15s ease",
                   whiteSpace: "nowrap",
@@ -266,12 +266,12 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
           <div style={{ padding: "32px 24px 0 24px" }}>
             <div style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 600, color: COLORS.cream50, textTransform: "uppercase", letterSpacing: "0.06em" }}>Waller Street Ventures</div>
           </div>
-          <div style={{ width: "calc(100% - 48px)", height: 1, background: "rgba(240, 237, 231, 0.15)", margin: "20px 24px 16px 24px" }} />
+          <div style={{ width: "calc(100% - 48px)", height: 1, background: "rgba(238, 233, 223, 0.15)", margin: "20px 24px 16px 24px" }} />
           <div style={{ padding: "0 24px", marginBottom: 20 }}>
             <div style={{ fontFamily: SANS, fontSize: 11, fontWeight: 600, color: COLORS.cream50, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.85, marginBottom: 4 }}>Puget Sound Therapeutics</div>
             <div style={{ fontFamily: SANS, fontSize: 11, color: COLORS.green500, letterSpacing: "0.02em" }}>Seed Round · SPV Data Room</div>
           </div>
-          <div style={{ width: "calc(100% - 48px)", height: 1, background: "rgba(240, 237, 231, 0.15)", margin: "0 24px 16px 24px" }} />
+          <div style={{ width: "calc(100% - 48px)", height: 1, background: "rgba(238, 233, 223, 0.15)", margin: "0 24px 16px 24px" }} />
           <nav role="tablist" aria-label="Data room sections" style={{ flex: 1, padding: "0 12px" }}>
             {desktopPrimarySections.map((item) => {
               const isActive = activeTab === item.id;
@@ -285,7 +285,7 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
                   onClick={() => navigate(item.id)}
                   onMouseEnter={() => setHoveredTab(item.id)}
                   onMouseLeave={() => setHoveredTab(null)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", padding: "10px 14px", borderRadius: 3, background: isActive ? "rgba(240, 237, 231, 0.12)" : showHover ? "rgba(240, 237, 231, 0.08)" : "transparent", border: "none", cursor: "pointer", marginBottom: 2, transition: "background 0.15s ease" }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", padding: "10px 14px", borderRadius: 3, background: isActive ? "rgba(238, 233, 223, 0.12)" : showHover ? "rgba(238, 233, 223, 0.08)" : "transparent", border: "none", cursor: "pointer", marginBottom: 2, transition: "background 0.15s ease" }}
                 >
                   <span style={{ fontFamily: SANS, fontSize: 13, color: isActive ? "#ffffff" : showHover ? COLORS.green200 : COLORS.green300, fontWeight: isActive ? 500 : 400 }}>{item.navLabel}</span>
                 </button>
@@ -310,18 +310,18 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
                   onClick={() => navigate(item.id)}
                   onMouseEnter={() => setHoveredTab(item.id)}
                   onMouseLeave={() => setHoveredTab(null)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", padding: "10px 14px 10px 26px", borderRadius: 3, background: isActive ? "rgba(240, 237, 231, 0.12)" : showHover ? "rgba(240, 237, 231, 0.08)" : "transparent", border: "none", cursor: "pointer", marginBottom: 2, transition: "background 0.15s ease" }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", padding: "10px 14px 10px 26px", borderRadius: 3, background: isActive ? "rgba(238, 233, 223, 0.12)" : showHover ? "rgba(238, 233, 223, 0.08)" : "transparent", border: "none", cursor: "pointer", marginBottom: 2, transition: "background 0.15s ease" }}
                 >
                   <span style={{ fontFamily: SANS, fontSize: 13, color: isActive ? "#ffffff" : showHover ? COLORS.green200 : COLORS.green300, fontWeight: isActive ? 500 : 400 }}>{item.navLabel}</span>
                 </button>
               );
             })}
           </nav>
-          <div style={{ padding: "16px", borderTop: "1px solid rgba(240, 237, 231, 0.15)" }}>
+          <div style={{ padding: "16px", borderTop: "1px solid rgba(238, 233, 223, 0.15)" }}>
             {contactSettings.schedule_url ? (
-              <a href={contactSettings.schedule_url} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "transparent", color: COLORS.green200, padding: "13px 16px", borderRadius: 3, border: "1px solid rgba(240, 237, 231, 0.25)", fontFamily: SANS, fontSize: 13, fontWeight: 600, textDecoration: "none", textAlign: "center", marginBottom: 10 }}>Schedule a Call</a>
+              <a href={contactSettings.schedule_url} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "transparent", color: COLORS.green200, padding: "13px 16px", borderRadius: 3, border: "1px solid rgba(238, 233, 223, 0.25)", fontFamily: SANS, fontSize: 13, fontWeight: 600, textDecoration: "none", textAlign: "center", marginBottom: 10 }}>Schedule a Call</a>
             ) : (
-              <div style={{ display: "block", background: "transparent", color: COLORS.green200, padding: "13px 16px", borderRadius: 3, border: "1px solid rgba(240, 237, 231, 0.25)", fontFamily: SANS, fontSize: 13, fontWeight: 600, textAlign: "center", marginBottom: 10, cursor: "not-allowed", opacity: 0.4, pointerEvents: "none" }}>Schedule a Call</div>
+              <div style={{ display: "block", background: "transparent", color: COLORS.green200, padding: "13px 16px", borderRadius: 3, border: "1px solid rgba(238, 233, 223, 0.25)", fontFamily: SANS, fontSize: 13, fontWeight: 600, textAlign: "center", marginBottom: 10, cursor: "not-allowed", opacity: 0.4, pointerEvents: "none" }}>Schedule a Call</div>
             )}
             <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.green300, textAlign: "center" }}>
               Text/call anytime · {contactSettings.phone_e164 ? (

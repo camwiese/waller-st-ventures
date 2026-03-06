@@ -16,7 +16,7 @@ export default function Image() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "#1e2a3a",
+          background: "#3b4a40",
           fontFamily: "Georgia, serif",
         }}
       >
@@ -32,7 +32,7 @@ export default function Image() {
             style={{
               fontSize: 56,
               fontWeight: 600,
-              color: "#fdfbf7",
+              color: "#f7f5f0",
               letterSpacing: "0.02em",
             }}
           >
@@ -42,7 +42,7 @@ export default function Image() {
             style={{
               width: 64,
               height: 3,
-              background: "#c47d52",
+              background: "#d4a853",
               borderRadius: 2,
             }}
           />
@@ -50,7 +50,7 @@ export default function Image() {
             style={{
               fontSize: 24,
               fontWeight: 400,
-              color: "rgba(240, 237, 231, 0.55)",
+              color: "rgba(238, 233, 223, 0.55)",
               textTransform: "uppercase",
               letterSpacing: "0.08em",
             }}

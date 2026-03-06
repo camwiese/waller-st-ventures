@@ -59,7 +59,7 @@ export default function RootLayout({ children }) {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body style={{ margin: 0, padding: 0, fontFamily: "'Inter', var(--font-sans), sans-serif", backgroundColor: "#fdfbf7" }}>
+      <body style={{ margin: 0, padding: 0, fontFamily: "'Inter', var(--font-sans), sans-serif", backgroundColor: "#f7f5f0" }}>
         {children}
         <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
         <Analytics />

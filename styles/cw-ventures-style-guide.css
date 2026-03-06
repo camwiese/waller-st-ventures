@@ -1,7 +1,7 @@
 /*
  * ============================================================
  *  CW VENTURES — BRAND STYLE GUIDE
- *  Soft Navy Palette
+ *  Sage & Sand Palette
  *  Last updated: March 2026
  * ============================================================
  *
@@ -18,28 +18,28 @@
 :root {
 
   /* Core palette */
-  --color-primary:        #1e2a3a;   /* Navy — sidebar bg, headings, footer */
-  --color-secondary:      #4a5568;   /* Slate — secondary text on dark bg */
-  --color-accent:         #c47d52;   /* Terracotta — ALL buttons, links, dividers, rules, active states */
-  --color-accent-hover:   #b06d42;   /* Terracotta dark — hover/pressed states */
-  --color-surface:        #edeae4;   /* Warm grey — table headers, card bgs, input bgs */
-  --color-background:     #fdfbf7;   /* Off-white — page background */
+  --color-primary:        #3b4a40;   /* Sage — sidebar bg, headings, footer */
+  --color-secondary:      #6b7f6e;   /* Muted sage — secondary text on dark bg */
+  --color-accent:         #d4a853;   /* Gold — ALL buttons, links, dividers, rules, active states */
+  --color-accent-hover:   #c09640;   /* Gold dark — hover/pressed states */
+  --color-surface:        #e8e2d6;   /* Sand — table headers, card bgs, input bgs */
+  --color-background:     #f7f5f0;   /* Warm off-white — page background */
 
   /* Sidebar */
-  --sidebar-bg:           #1e2a3a;
-  --sidebar-text:         #f0ede7;
-  --sidebar-text-muted:   rgba(240, 237, 231, 0.55);
-  --sidebar-active-bg:    rgba(240, 237, 231, 0.12);
+  --sidebar-bg:           #3b4a40;
+  --sidebar-text:         #eee9df;
+  --sidebar-text-muted:   rgba(238, 233, 223, 0.55);
+  --sidebar-active-bg:    rgba(238, 233, 223, 0.12);
 
   /* Typography */
   --font-serif:           var(--font-serif-garamond), 'Cormorant Garamond', Georgia, serif;
   --font-sans:            var(--font-sans), 'Inter', sans-serif;
-  --text-heading:         #1e2a3a;
-  --text-body:            #3d3d38;
-  --text-muted:           #8a95a5;
+  --text-heading:         #3b4a40;
+  --text-body:            #3e3b34;
+  --text-muted:           #9b9a8e;
 
   /* Borders & controls */
-  --border-light:         #e2dfd8;
+  --border-light:         #ddd8cc;
   --radius:               3px;
 }
 
@@ -78,10 +78,10 @@
 
 /*
  * Every button and CTA across the entire product — data room,
- * login pages, emails — uses the same terracotta accent color.
+ * login pages, emails — uses the same gold accent color.
  *
  * Primary (filled):
- *   background:    var(--color-accent)        #c47d52
+ *   background:    var(--color-accent)        #d4a853
  *   color:         #ffffff
  *   border:        none
  *   border-radius: var(--radius)              3px
@@ -89,15 +89,15 @@
  *   font-family:   var(--font-sans)
  *   font-size:     13px
  *   font-weight:   500
- *   hover:         var(--color-accent-hover)  #b06d42
+ *   hover:         var(--color-accent-hover)  #c09640
  *
  * Ghost / outline (sidebar "Schedule a Call"):
  *   background:    transparent
- *   border:        1px solid rgba(240, 237, 231, 0.25)
+ *   border:        1px solid rgba(238, 233, 223, 0.25)
  *   color:         var(--sidebar-text)
  *   border-radius: var(--radius)              3px
  *   padding:       13px 0  (full-width)
- *   hover:         background rgba(240, 237, 231, 0.08)
+ *   hover:         background rgba(238, 233, 223, 0.08)
  *
  * Full-width variant (login page "Continue", email CTA):
  *   Same as primary, but width: 100% and padding: 14px 0
@@ -118,7 +118,7 @@
 
 /*
  * All decorative dividers and rules use the accent color:
- *   background/border-color: var(--color-accent)   #c47d52
+ *   background/border-color: var(--color-accent)   #d4a853
  *
  * Accent rule (below page titles):
  *   width: 40px; height: 2.5px; border-radius: 2px
@@ -143,14 +143,14 @@
  *   overflow: hidden
  *
  * Table header row:
- *   background:    var(--color-surface)       #edeae4
+ *   background:    var(--color-surface)       #e8e2d6
  *   padding:       14px 24px
  *   font-family:   var(--font-sans)
  *   font-size:     11px
  *   font-weight:   600
  *   letter-spacing: 1.5px
  *   text-transform: uppercase
- *   color:         var(--text-body)           #3d3d38
+ *   color:         var(--text-body)           #3e3b34
  *
  * Table body rows:
  *   background:    #ffffff
@@ -167,15 +167,15 @@
  *   font-family:   var(--font-sans)
  *   font-size:     15px
  *   font-weight:   600
- *   color:         var(--text-heading)        #1e2a3a
+ *   color:         var(--text-heading)        #3b4a40
  *   text-align:    right
  *
  * Accent values (monetary amounts, key figures):
- *   color:         var(--color-accent)        #c47d52
+ *   color:         var(--color-accent)        #d4a853
  *   font-weight:   600
  *
  * Alternating row tint (optional):
- *   every other row: background rgba(237, 234, 228, 0.3)
+ *   every other row: background rgba(232, 226, 214, 0.3)
  *
  * Section subheader within a table (e.g. "SPV TERMS"):
  *   Same style as table header but with:
@@ -189,7 +189,7 @@
 /* ─── SIDEBAR / NAVIGATION ──────────────────────────────────── */
 
 /*
- * Background:      var(--sidebar-bg)          #1e2a3a
+ * Background:      var(--sidebar-bg)          #3b4a40
  * Width:           264px
  *
  * Brand name:
@@ -253,7 +253,7 @@
  *   focus:
  *     border-color: var(--color-accent)
  *     outline: none
- *     box-shadow: 0 0 0 2px rgba(196, 125, 82, 0.15)
+ *     box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.15)
  */
 
 

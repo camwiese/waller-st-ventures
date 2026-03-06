@@ -7,7 +7,7 @@
   font-family: var(--font-serif), Georgia, serif;
   font-size: 24px;
   font-weight: 600;
-  color: #1e2a3a;
+  color: #3b4a40;
   margin: 32px 0 20px 0;
   letter-spacing: -0.01em;
 }
@@ -20,7 +20,7 @@
   font-family: var(--font-serif), Georgia, serif;
   font-size: 22px;
   font-weight: 600;
-  color: #1e2a3a;
+  color: #3b4a40;
   margin: 28px 0 16px 0;
   letter-spacing: -0.01em;
 }
@@ -33,12 +33,12 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 15px;
   line-height: 1.8;
-  color: #3d3d38;
+  color: #3e3b34;
   margin: 0 0 20px 0;
 }
 
 .cms-prose a {
-  color: #c47d52;
+  color: #d4a853;
   text-decoration: underline;
 }
 
@@ -47,7 +47,7 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 14px;
   line-height: 1.75;
-  color: #3d3d38;
+  color: #3e3b34;
   margin: 0 0 16px 0;
   padding-left: 20px;
 }
@@ -57,10 +57,10 @@
 }
 
 .cms-prose blockquote {
-  border-left: 4px solid #c47d52;
+  border-left: 4px solid #d4a853;
   margin: 0 0 28px 0;
   padding-left: 16px;
-  color: #4a5568;
+  color: #6b7f6e;
 }
 
 .cms-prose strong {
@@ -81,7 +81,7 @@
 }
 
 .cms-prose sup a {
-  color: #c47d52;
+  color: #d4a853;
   text-decoration: none;
   font-weight: 400;
 }
@@ -93,7 +93,7 @@
   top: -0.65em;
   text-decoration: none;
   display: inline-block;
-  color: #c47d52;
+  color: #d4a853;
   font-weight: 400;
 }
 
@@ -124,7 +124,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #e2dfd8;
+  border: 1px solid #ddd8cc;
   border-radius: 3px;
   margin: 24px 0;
   font-size: 12px;
@@ -136,12 +136,12 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 10px;
   font-weight: 700;
-  color: #8a95a5;
+  color: #9b9a8e;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 12px 14px;
-  background: #edeae4;
-  border-bottom: 2px solid #e2dfd8;
+  background: #e8e2d6;
+  border-bottom: 2px solid #ddd8cc;
   text-align: center;
 }
 
@@ -149,9 +149,9 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 12px;
   line-height: 1.5;
-  color: #3d3d38;
+  color: #3e3b34;
   padding: 10px 14px;
-  border-bottom: 1px solid #e2dfd8;
+  border-bottom: 1px solid #ddd8cc;
   vertical-align: middle;
   text-align: center;
   word-wrap: break-word;
@@ -160,7 +160,7 @@
 
 .cms-prose td:first-child {
   text-align: left;
-  border-right: 2px solid #e2dfd8;
+  border-right: 2px solid #ddd8cc;
 }
 
 .cms-prose th:first-child {
@@ -168,7 +168,7 @@
 }
 
 .cms-prose tbody tr:nth-child(odd) {
-  background: #fdfbf7;
+  background: #f7f5f0;
 }
 
 .cms-prose tbody tr:nth-child(even) {
@@ -200,7 +200,7 @@
 .cms-prose-sm p {
   font-size: 14px;
   line-height: 1.75;
-  color: #3d3d38;
+  color: #3e3b34;
   margin: 0 0 12px 0;
 }
 
@@ -209,7 +209,7 @@
 }
 
 .cms-prose-sm a {
-  color: #c47d52;
+  color: #d4a853;
   text-decoration: underline;
 }
 
@@ -217,7 +217,7 @@
 .cms-prose-sm ol {
   font-size: 14px;
   line-height: 1.75;
-  color: #3d3d38;
+  color: #3e3b34;
   margin: 0 0 12px 0;
   padding-left: 20px;
 }
@@ -236,7 +236,7 @@
 }
 
 .cms-prose-sm sup a {
-  color: #c47d52;
+  color: #d4a853;
   text-decoration: none;
   font-weight: 400;
 }
@@ -248,7 +248,7 @@
   top: -0.65em;
   text-decoration: none;
   display: inline-block;
-  color: #c47d52;
+  color: #d4a853;
   font-weight: 400;
 }
 
@@ -272,7 +272,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #e2dfd8;
+  border: 1px solid #ddd8cc;
   border-radius: 3px;
   margin: 16px 0;
   font-size: 13px;
@@ -285,12 +285,12 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 10px;
   font-weight: 700;
-  color: #8a95a5;
+  color: #9b9a8e;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 14px 20px;
-  background: #edeae4;
-  border-bottom: 2px solid #e2dfd8;
+  background: #e8e2d6;
+  border-bottom: 2px solid #ddd8cc;
   text-align: left;
 }
 
@@ -298,16 +298,16 @@
   font-family: var(--font-sans), "Inter", sans-serif;
   font-size: 13px;
   line-height: 1.6;
-  color: #3d3d38;
+  color: #3e3b34;
   padding: 12px 20px;
-  border-bottom: 1px solid #e2dfd8;
+  border-bottom: 1px solid #ddd8cc;
   vertical-align: top;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
 .cms-prose-sm tbody tr:nth-child(odd) {
-  background: #fdfbf7;
+  background: #f7f5f0;
 }
 
 .cms-prose-sm tbody tr:nth-child(even) {
