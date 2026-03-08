@@ -796,7 +796,6 @@ export default function AnalyticsTable({
   }, []);
 
   const fetchNdaAuditLog = useCallback(async () => {
-    if (ndaAuditLoading) return;
     setNdaAuditLoading(true);
     try {
       const res = await fetch("/api/admin/nda-audit");
@@ -808,7 +807,7 @@ export default function AnalyticsTable({
     } catch { /* ignore */ } finally {
       setNdaAuditLoading(false);
     }
-  }, [ndaAuditLoading]);
+  }, []);
 
   useEffect(() => {
     if (view === "settings" && !ndaAuditLoaded) {
