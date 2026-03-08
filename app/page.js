@@ -35,14 +35,14 @@ const styles = {
     fontSize: "1.1rem",
     letterSpacing: "0.25em",
     textTransform: "uppercase",
-    color: "#3b4a40",
+    color: "#33403a",
     textAlign: "center",
     margin: 0,
   },
   divider: {
     width: 36,
     height: 2,
-    backgroundColor: "#d4a853",
+    backgroundColor: "#c4a355",
     borderRadius: 1,
     margin: "0.75rem 0",
   },
@@ -53,7 +53,7 @@ const styles = {
     letterSpacing: "0.12em",
   },
   contactLink: {
-    color: "#d4a853",
+    color: "#c4a355",
     textDecoration: "none",
   },
 };
