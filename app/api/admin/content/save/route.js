@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { createClient, createServiceClient } from "../../../../../lib/supabase/server";
+import { requireAdminAccess } from "../../../../../lib/adminAuth";
 import { sanitizeFaqGroups, sanitizeRichText } from "../../../../../lib/cms/sanitize";
 import { diffFaqGroups } from "../../../../../lib/cms/faq-diff";
 
@@ -32,14 +33,18 @@ function normalizeBlockContent(blockType, value) {
 
 export async function POST(request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
   const isLocalDevBypass = process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
-  const gpEmail = (process.env.GP_EMAIL || "").toLowerCase();
-  if (!isLocalDevBypass && (!user || user.email?.toLowerCase() !== gpEmail)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  let actorId = null;
+  let actorEmail = process.env.GP_EMAIL || "local-dev-admin";
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+    if (!auth.isGP && !auth.partner?.can_edit_content) {
+      return NextResponse.json({ error: "You don't have permission to edit content" }, { status: 403 });
+    }
+    actorId = auth.user?.id || null;
+    actorEmail = auth.email;
   }
-  const actorId = user?.id || null;
-  const actorEmail = user?.email || process.env.GP_EMAIL || "local-dev-admin";
 
   let body;
   try {

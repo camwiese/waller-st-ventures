@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { createClient, createServiceClient } from "../../../../../lib/supabase/server";
-import { isAdminEmail } from "../../../../../lib/admin";
+import { requireAdminAccess } from "../../../../../lib/adminAuth";
 
 export async function GET(request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
   const isLocalDevBypass = process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
-  if (!isLocalDevBypass && (!user || !isAdminEmail(user.email))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+    if (!auth.isGP && !auth.partner?.can_edit_content) {
+      return NextResponse.json({ error: "You don't have permission to edit content" }, { status: 403 });
+    }
   }
 
   const { searchParams } = new URL(request.url);
@@ -44,13 +47,18 @@ function toSlug(input) {
 
 export async function POST(request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
   const isLocalDevBypass = process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
-  if (!isLocalDevBypass && (!user || !isAdminEmail(user.email))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  let actorId = null;
+  let actorEmail = process.env.GP_EMAIL || "local-dev-admin";
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
+    if (!auth.isGP && !auth.partner?.can_edit_content) {
+      return NextResponse.json({ error: "You don't have permission to edit content" }, { status: 403 });
+    }
+    actorId = auth.user?.id || null;
+    actorEmail = auth.email;
   }
-  const actorId = user?.id || null;
-  const actorEmail = user?.email || process.env.GP_EMAIL || "local-dev-admin";
 
   let body;
   try {

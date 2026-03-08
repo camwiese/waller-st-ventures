@@ -12,7 +12,7 @@ export async function GET() {
   const serviceClient = createServiceClient();
   const { data, error } = await serviceClient
     .from("partner_admins")
-    .select("id, email, name, added_by, notify_on_own_invites, created_at")
+    .select("id, email, name, added_by, notify_on_own_invites, can_edit_content, created_at")
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -56,7 +56,7 @@ export async function POST(request) {
       name: name?.trim() || null,
       added_by: auth.email,
     })
-    .select("id, email, name, added_by, notify_on_own_invites, created_at")
+    .select("id, email, name, added_by, notify_on_own_invites, can_edit_content, created_at")
     .single();
 
   if (insertError) {

@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { COLORS, SANS } from "../../constants/theme";
 
-const LINKS = [
+const ALL_LINKS = [
   { href: "/pst", label: "Data Room" },
-  { href: "/admin/content", label: "Edit Content" },
+  { href: "/admin/content", label: "Edit Content", requiresContentEdit: true },
   { href: "/admin", label: "Analytics" },
-  { href: "/admin/changelog", label: "Change Log" },
+  { href: "/admin/changelog", label: "Change Log", requiresContentEdit: true },
 ];
 
 function isActive(pathname, href) {
@@ -24,6 +24,7 @@ export default function AdminTopNav() {
     return window.matchMedia("(max-width: 820px)").matches;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [canEditContent, setCanEditContent] = useState(true); // default true, hide if partner without permission
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 820px)");
@@ -36,10 +37,28 @@ export default function AdminTopNav() {
     setMenuOpen(false);
   }, [pathname]);
 
+  // Fetch admin context to determine content edit access
+  useEffect(() => {
+    fetch("/api/admin/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && !data.error) {
+          // GP always can edit; partners need can_edit_content
+          setCanEditContent(data.isGP || data.partner?.can_edit_content || false);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const links = useMemo(
+    () => ALL_LINKS.filter((link) => !link.requiresContentEdit || canEditContent),
+    [canEditContent]
+  );
+
   const activeLabel = useMemo(() => {
-    const active = LINKS.find((link) => isActive(pathname || "", link.href));
+    const active = links.find((link) => isActive(pathname || "", link.href));
     return active?.label || "Admin";
-  }, [pathname]);
+  }, [pathname, links]);
 
   return (
     <header style={{ background: COLORS.green900, borderBottom: `1px solid ${COLORS.green800}`, position: "sticky", top: 0, zIndex: 20 }}>
@@ -105,7 +124,7 @@ export default function AdminTopNav() {
                     Admin
                   </div>
                   <div style={{ display: "grid", gap: 6 }}>
-                    {LINKS.map((link) => {
+                    {links.map((link) => {
                       const active = isActive(pathname || "", link.href);
                       return (
                         <Link
@@ -145,7 +164,7 @@ export default function AdminTopNav() {
               scrollbarWidth: "none",
             }}
           >
-            {LINKS.map((link) => {
+            {links.map((link) => {
               const active = isActive(pathname || "", link.href);
               return (
                 <Link

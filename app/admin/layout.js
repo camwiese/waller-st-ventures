@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import AdminTopNav from "../../components/admin/AdminTopNav";
 import { isAdminEmail } from "../../lib/admin";
+import { isAnyAdmin } from "../../lib/adminAuth";
 import { createClient } from "../../lib/supabase/server";
 
 export default async function AdminLayout({ children }) {
@@ -11,8 +12,11 @@ export default async function AdminLayout({ children }) {
   const isLocalDevBypass =
     process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
 
-  if (!isLocalDevBypass && (!user || !isAdminEmail(user.email))) {
-    redirect("/pst");
+  if (!isLocalDevBypass) {
+    const email = user?.email;
+    if (!user || !(isAdminEmail(email) || await isAnyAdmin(email))) {
+      redirect("/pst");
+    }
   }
 
   return (

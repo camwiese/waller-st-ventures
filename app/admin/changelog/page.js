@@ -1,9 +1,19 @@
-import { createServiceClient } from "../../../lib/supabase/server";
+import { redirect } from "next/navigation";
+import { createClient, createServiceClient } from "../../../lib/supabase/server";
 import { getDealBySlug } from "../../../lib/cms/content";
+import { requireAdminAccess } from "../../../lib/adminAuth";
 import Changelog from "../../../components/admin/cms/Changelog";
 import { COLORS } from "../../../constants/theme";
 
 export default async function AdminChangelogPage() {
+  const supabase = await createClient();
+  const isLocalDevBypass =
+    process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) redirect("/admin");
+    if (!auth.isGP && !auth.partner?.can_edit_content) redirect("/admin");
+  }
   const dealSlug = process.env.DEFAULT_DEAL_SLUG || "pst";
   const deal = await getDealBySlug(dealSlug);
 

@@ -593,6 +593,7 @@ export default function AnalyticsTable({
   const [removingPartner, setRemovingPartner] = useState(null);
   const [notifyPref, setNotifyPref] = useState(adminContext?.partner?.notify_on_own_invites ?? true);
   const [notifyPrefSaving, setNotifyPrefSaving] = useState(false);
+  const [togglingContentEdit, setTogglingContentEdit] = useState(null);
 
   const toggle = (email) => setExpanded(prev => ({ ...prev, [email]: !prev[email] }));
 
@@ -725,6 +726,29 @@ export default function AnalyticsTable({
       toast.error("Network error");
     }
     setNotifyPrefSaving(false);
+  };
+
+  const handleToggleContentEdit = async (partnerEmail, checked) => {
+    setTogglingContentEdit(partnerEmail);
+    // Optimistic update
+    setPartners((prev) => prev.map((p) => p.email === partnerEmail ? { ...p, can_edit_content: checked } : p));
+    try {
+      const res = await fetch("/api/admin/partners/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ partnerEmail, canEditContent: checked }),
+      });
+      if (res.ok) {
+        toast.success(checked ? "Content editing enabled" : "Content editing disabled");
+      } else {
+        setPartners((prev) => prev.map((p) => p.email === partnerEmail ? { ...p, can_edit_content: !checked } : p));
+        toast.error("Failed to update permission");
+      }
+    } catch {
+      setPartners((prev) => prev.map((p) => p.email === partnerEmail ? { ...p, can_edit_content: !checked } : p));
+      toast.error("Network error");
+    }
+    setTogglingContentEdit(null);
   };
 
   const handleAddRecipient = async (e) => {
@@ -1646,6 +1670,7 @@ export default function AnalyticsTable({
                         <th style={th}>Email</th>
                         <th style={th}>Name</th>
                         <th style={th}>Notifications</th>
+                        <th style={th}>Edit content</th>
                         <th style={{ ...th, width: 100 }}></th>
                       </tr>
                     </thead>
@@ -1656,6 +1681,17 @@ export default function AnalyticsTable({
                           <td style={{ ...td, color: COLORS.text500 }}>{p.name || "\u2014"}</td>
                           <td style={td}>
                             <StatusBadge status={p.notify_on_own_invites ? "active" : "pending_login"} />
+                          </td>
+                          <td style={td}>
+                            <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                              <input
+                                type="checkbox"
+                                checked={p.can_edit_content || false}
+                                onChange={(e) => handleToggleContentEdit(p.email, e.target.checked)}
+                                disabled={togglingContentEdit === p.email}
+                                style={{ width: 16, height: 16 }}
+                              />
+                            </label>
                           </td>
                           <td style={td}>
                             <button

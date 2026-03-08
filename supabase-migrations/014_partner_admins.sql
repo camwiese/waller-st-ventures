@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS partner_admins (
   name TEXT,
   added_by TEXT,
   notify_on_own_invites BOOLEAN NOT NULL DEFAULT true,
+  can_edit_content BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

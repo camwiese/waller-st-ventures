@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "../../../lib/supabase/server";
 import { getDealBySlug } from "../../../lib/cms/content";
+import { requireAdminAccess } from "../../../lib/adminAuth";
 import ContentEditorClient from "../../../components/admin/cms/ContentEditorClient";
 import { COLORS } from "../../../constants/theme";
 
@@ -108,7 +110,20 @@ async function ensureContactSettingsBlock(service, dealId) {
 
 export default async function AdminContentPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const isLocalDevBypass =
+    process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
+
+  let user = null;
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) redirect("/admin");
+    // Partners need can_edit_content permission
+    if (!auth.isGP && !auth.partner?.can_edit_content) redirect("/admin");
+    user = auth.user;
+  } else {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user;
+  }
 
   const dealSlug = process.env.DEFAULT_DEAL_SLUG || "pst";
   const deal = await getDealBySlug(dealSlug);
