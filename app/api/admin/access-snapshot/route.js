@@ -26,7 +26,7 @@ export async function GET() {
   const [allowedResult, requestsResult, recipientsResult] = await Promise.all([
     serviceClient
       .from("allowed_emails")
-      .select("id, email, source, invited_at, invited_by_email")
+      .select("id, email, source, invited_at, invited_by_email, nda_required")
       .order("created_at", { ascending: false }),
     serviceClient
       .from("access_requests")
