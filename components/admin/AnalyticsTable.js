@@ -500,7 +500,7 @@ function RequestCardMobile({ request, onApprove, onDeny, onCopyLink, approving, 
 
 // --- Mobile Invite Card ---
 
-function InviteCardMobile({ item, onCopyLink, copiedEmail }) {
+function InviteCardMobile({ item, onCopyLink, copiedEmail, onToggleNda, togglingNda }) {
   return (
     <div style={cardStyle}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
@@ -510,9 +510,26 @@ function InviteCardMobile({ item, onCopyLink, copiedEmail }) {
       <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text500, marginBottom: 10 }}>
         {item.invited_at ? formatRequestDate(item.invited_at) : "Direct invite"}
       </div>
-      <button onClick={() => onCopyLink(item.email)} style={{ ...btnSmall(false), width: "100%", background: copiedEmail === item.email ? COLORS.green600 : COLORS.green800 }}>
-        {copiedEmail === item.email ? "Copied!" : "Copy invite link"}
-      </button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <button onClick={() => onCopyLink(item.email)} style={{ ...btnSmall(false), flex: 1, background: copiedEmail === item.email ? COLORS.green600 : COLORS.green800 }}>
+          {copiedEmail === item.email ? "Copied!" : "Copy invite link"}
+        </button>
+        <button
+          type="button"
+          onClick={() => onToggleNda(item.email, item.nda_required === false)}
+          disabled={togglingNda === item.email}
+          style={{
+            ...btnBase,
+            fontSize: 12, padding: "8px 14px",
+            color: item.nda_required === false ? COLORS.text500 : COLORS.green800,
+            background: item.nda_required === false ? COLORS.gray100 : COLORS.green100,
+            border: `1px solid ${item.nda_required === false ? COLORS.border : COLORS.green300}`,
+            opacity: togglingNda === item.email ? 0.6 : 1,
+          }}
+        >
+          NDA {item.nda_required === false ? "Off" : "On"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -594,6 +611,10 @@ export default function AnalyticsTable({
   const [notifyPref, setNotifyPref] = useState(adminContext?.partner?.notify_on_own_invites ?? true);
   const [notifyPrefSaving, setNotifyPrefSaving] = useState(false);
   const [togglingContentEdit, setTogglingContentEdit] = useState(null);
+  const [togglingNda, setTogglingNda] = useState(null);
+  const [ndaAuditLog, setNdaAuditLog] = useState([]);
+  const [ndaAuditLoaded, setNdaAuditLoaded] = useState(false);
+  const [ndaAuditLoading, setNdaAuditLoading] = useState(false);
 
   const toggle = (email) => setExpanded(prev => ({ ...prev, [email]: !prev[email] }));
 
@@ -750,6 +771,50 @@ export default function AnalyticsTable({
     }
     setTogglingContentEdit(null);
   };
+
+  const handleToggleNda = useCallback(async (email, newValue) => {
+    setTogglingNda(email);
+    try {
+      const res = await fetch("/api/admin/nda-toggle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, nda_required: newValue }),
+      });
+      if (res.ok) {
+        setAllowedEmailsState((prev) =>
+          prev.map((a) => a.email?.toLowerCase() === email.toLowerCase() ? { ...a, nda_required: newValue } : a)
+        );
+        toast.success(`NDA ${newValue ? "required" : "not required"} for ${email}`);
+      } else {
+        toast.error("Failed to update NDA setting");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setTogglingNda(null);
+    }
+  }, []);
+
+  const fetchNdaAuditLog = useCallback(async () => {
+    if (ndaAuditLoading) return;
+    setNdaAuditLoading(true);
+    try {
+      const res = await fetch("/api/admin/nda-audit");
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setNdaAuditLog(data.agreements || []);
+        setNdaAuditLoaded(true);
+      }
+    } catch { /* ignore */ } finally {
+      setNdaAuditLoading(false);
+    }
+  }, [ndaAuditLoading]);
+
+  useEffect(() => {
+    if (view === "settings" && !ndaAuditLoaded) {
+      fetchNdaAuditLog();
+    }
+  }, [view, ndaAuditLoaded, fetchNdaAuditLog]);
 
   const handleAddRecipient = async (e) => {
     e.preventDefault();
@@ -1521,7 +1586,7 @@ export default function AnalyticsTable({
                 {allowedEmailsState.length === 0 ? (
                   <EmptyState title="No invites yet" description="Add an email above to send an invite." />
                 ) : allowedEmailsState.map(a => (
-                  <InviteCardMobile key={a.id} item={a} onCopyLink={copyInviteLink} copiedEmail={copiedEmail} />
+                  <InviteCardMobile key={a.id} item={a} onCopyLink={copyInviteLink} copiedEmail={copiedEmail} onToggleNda={handleToggleNda} togglingNda={togglingNda} />
                 ))}
               </div>
             ) : (
@@ -1532,6 +1597,7 @@ export default function AnalyticsTable({
                       <th style={th}>Email</th>
                       <th style={th}>Status</th>
                       <th style={th}>Invited At</th>
+                      <th style={{ ...th, textAlign: "center" }}>NDA Required</th>
                       <th style={{ ...th, width: 100 }}></th>
                     </tr>
                   </thead>
@@ -1541,6 +1607,24 @@ export default function AnalyticsTable({
                         <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{a.email}</span></td>
                         <td style={td}><StatusBadge status={a.status} /></td>
                         <td style={td}>{formatRequestDate(a.invited_at)}</td>
+                        <td style={{ ...td, textAlign: "center" }}>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleNda(a.email, a.nda_required === false)}
+                            disabled={togglingNda === a.email}
+                            style={{
+                              ...btnBase,
+                              fontSize: 12, padding: "6px 14px",
+                              color: a.nda_required === false ? COLORS.text500 : COLORS.green800,
+                              background: a.nda_required === false ? COLORS.gray100 : COLORS.green100,
+                              border: `1px solid ${a.nda_required === false ? COLORS.border : COLORS.green300}`,
+                              cursor: togglingNda === a.email ? "not-allowed" : "pointer",
+                              opacity: togglingNda === a.email ? 0.6 : 1,
+                            }}
+                          >
+                            {a.nda_required === false ? "Off" : "On"}
+                          </button>
+                        </td>
                         <td style={td}>
                           <button type="button" onClick={() => copyInviteLink(a.email)} style={{ ...btnSmall(false), background: copiedEmail === a.email ? COLORS.green600 : COLORS.green800 }}>
                             {copiedEmail === a.email ? "Copied!" : "Copy link"}
@@ -1796,6 +1880,61 @@ export default function AnalyticsTable({
                 )}
               </>
             )}
+
+            {/* --- NDA Audit Log --- */}
+            <div style={{ borderTop: `1px solid ${COLORS.border}`, marginTop: 28, paddingTop: 24 }}>
+              <div style={{ ...sectionLabel, marginBottom: 16 }}>NDA Agreement Audit Log</div>
+              <p style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text600, marginBottom: 20, lineHeight: 1.5 }}>
+                Record of all NDA agreements signed by data room viewers.
+              </p>
+              {ndaAuditLoading && !ndaAuditLoaded && (
+                <div style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text500 }}>Loading audit log...</div>
+              )}
+              {ndaAuditLoaded && ndaAuditLog.length === 0 && (
+                <p style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text500 }}>No NDA agreements recorded yet.</p>
+              )}
+              {ndaAuditLoaded && ndaAuditLog.length > 0 && (
+                isMobile ? (
+                  <div>
+                    {ndaAuditLog.map((entry) => (
+                      <div key={entry.id} style={cardStyle}>
+                        <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.text900, marginBottom: 2 }}>{entry.signer_name || "\u2014"}</div>
+                        <div style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text600, marginBottom: 4, wordBreak: "break-all" }}>{entry.user_email}</div>
+                        <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text500, marginBottom: 2 }}>
+                          Signed: {new Date(entry.agreed_at).toLocaleString()}
+                        </div>
+                        <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text400 }}>
+                          Version {entry.nda_version} &middot; IP: {entry.ip_address || "N/A"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: COLORS.cream100 }}>
+                        <th style={th}>Name</th>
+                        <th style={th}>Email</th>
+                        <th style={th}>Signed At</th>
+                        <th style={th}>Version</th>
+                        <th style={th}>IP Address</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ndaAuditLog.map((entry) => (
+                        <tr key={entry.id}>
+                          <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{entry.signer_name || "\u2014"}</span></td>
+                          <td style={td}>{entry.user_email}</td>
+                          <td style={td}>{new Date(entry.agreed_at).toLocaleString()}</td>
+                          <td style={td}>{entry.nda_version}</td>
+                          <td style={td}>{entry.ip_address || "N/A"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )
+              )}
+            </div>
           </div>
         )}
 
