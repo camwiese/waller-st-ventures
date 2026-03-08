@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
 import { isAdminEmail } from "../../../../lib/admin";
+import { requireAdminAccess } from "../../../../lib/adminAuth";
 import { TAB_WEIGHTS, TAB_LABELS, TAB_ORDER } from "../../../../constants/tabs";
 import {
   computeRawIntentScore,
@@ -66,10 +67,10 @@ function parseRangeParam(range) {
 
 export async function GET(request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
   const isLocalDevBypass = process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
-  if (!isLocalDevBypass && (!user || !isAdminEmail(user.email))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
   const { searchParams } = new URL(request.url);
@@ -92,9 +93,10 @@ export async function GET(request) {
     pageViewsQuery = pageViewsQuery.gte("created_at", since);
   }
 
-  const [pageViewsResult, revokedResult] = await Promise.all([
+  const [pageViewsResult, revokedResult, allowedResult] = await Promise.all([
     pageViewsQuery,
     serviceClient.from("revoked_emails").select("email"),
+    serviceClient.from("allowed_emails").select("email, invited_by_email, invited_by_name"),
   ]);
 
   const { data: rows, error } = pageViewsResult;
@@ -113,6 +115,18 @@ export async function GET(request) {
   );
   const displayExclude = new Set([...excludeEmails, ...revokedEmails]);
   const allRows = (rows || []).filter((r) => !displayExclude.has(r.user_email?.toLowerCase()));
+
+  // Build invited-by lookup from allowed_emails
+  const invitedByMap = {};
+  for (const row of (allowedResult.data || [])) {
+    const email = row.email?.toLowerCase();
+    if (email) {
+      invitedByMap[email] = {
+        invitedByEmail: row.invited_by_email || null,
+        invitedByName: row.invited_by_name || null,
+      };
+    }
+  }
 
   const byEmail = {};
   for (const row of allRows) {
@@ -185,6 +199,8 @@ export async function GET(request) {
       })),
     }));
 
+    const invitedByInfo = invitedByMap[email.toLowerCase()] || {};
+
     return {
       email,
       visits,
@@ -196,6 +212,8 @@ export async function GET(request) {
       heatingUp,
       tabs,
       sessions,
+      invitedByEmail: invitedByInfo.invitedByEmail || null,
+      invitedByName: invitedByInfo.invitedByName || null,
     };
   });
 

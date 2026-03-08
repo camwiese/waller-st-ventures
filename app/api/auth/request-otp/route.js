@@ -5,6 +5,7 @@ import { getAdminEmails } from "../../../../lib/admin";
 import { isValidEmail, normalizeEmail } from "../../../../lib/email";
 import { randomUUID } from "crypto";
 import { normalizeAppUrl } from "../../../../lib/url";
+import { isAnyAdmin } from "../../../../lib/adminAuth";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -40,9 +41,10 @@ export async function POST(request) {
     return NextResponse.json({ error: { message: "Service temporarily unavailable" } }, { status: 503 });
   }
 
-  // Check if email is on approved list (bypass for admin emails)
+  // Check if email is on approved list (bypass for admin emails and partner admins)
   const isGp = adminEmails.includes(normalizedEmail);
-  if (!isGp) {
+  const isPartner = !isGp && await isAnyAdmin(normalizedEmail);
+  if (!isGp && !isPartner) {
     const { data: allowed, error: allowedError } = await serviceClient
       .from("allowed_emails")
       .select("id")

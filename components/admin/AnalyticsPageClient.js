@@ -20,6 +20,17 @@ export default function AnalyticsPageClient({ dealSlug }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [adminContext, setAdminContext] = useState(null);
+
+  // Fetch admin context (GP vs partner, notification prefs)
+  useEffect(() => {
+    fetch("/api/admin/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && !data.error) setAdminContext(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const loadAnalytics = useCallback(async (nextCursor = 0, append = false) => {
     if (append) setLoadingMore(true);
@@ -139,6 +150,7 @@ export default function AnalyticsPageClient({ dealSlug }) {
         onLoadMore={hasMore ? () => loadAnalytics((data.nextCursor ?? 0), true) : null}
         loadingMore={loadingMore}
         hasMore={hasMore}
+        adminContext={adminContext}
       />
     </div>
   );

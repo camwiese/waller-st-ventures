@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
 import { sendInviteEmail } from "../../../../lib/notifications";
-import { isAdminEmail } from "../../../../lib/admin";
+import { requireAdminAccess } from "../../../../lib/adminAuth";
 import { isValidEmail, normalizeEmail } from "../../../../lib/email";
 
 export async function POST(request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || !isAdminEmail(user.email)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  }
+  const auth = await requireAdminAccess(supabase);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   let body;
   try {
@@ -31,6 +29,7 @@ export async function POST(request) {
   const { error: insertError } = await serviceClient.from("allowed_emails").insert({
     email: targetEmail,
     source: "admin_added",
+    invited_by_email: auth.email,
   });
 
   if (insertError) {

@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
 import { sendInviteEmail } from "../../../../lib/notifications";
-import { isAdminEmail } from "../../../../lib/admin";
+import { requireAdminAccess } from "../../../../lib/adminAuth";
 import { isValidEmail, normalizeEmail } from "../../../../lib/email";
-function requireAdmin(supabase) {
-  return async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !isAdminEmail(user.email)) {
-      return { error: NextResponse.json({ error: "Unauthorized" }, { status: 403 }) };
-    }
-    return { user };
-  };
-}
 
 export async function GET() {
   const supabase = await createClient();
-  const auth = await requireAdmin(supabase)();
-  if (auth.error) return auth.error;
+  const auth = await requireAdminAccess(supabase);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const serviceClient = createServiceClient();
   const { data, error } = await serviceClient
@@ -34,8 +25,8 @@ export async function GET() {
 
 export async function POST(request) {
   const supabase = await createClient();
-  const auth = await requireAdmin(supabase)();
-  if (auth.error) return auth.error;
+  const auth = await requireAdminAccess(supabase);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   let body;
   try {
@@ -53,7 +44,7 @@ export async function POST(request) {
   }
 
   const targetEmail = normalizeEmail(email);
-  const reviewer = auth.user?.email?.toLowerCase() || "admin";
+  const reviewer = auth.email || "admin";
 
   const serviceClient = createServiceClient();
 
@@ -88,6 +79,7 @@ export async function POST(request) {
     email: targetEmail,
     source: "request_approved",
     invited_by: invitedBy?.trim() || null,
+    invited_by_email: auth.email,
     notes: notes?.trim() || null,
   });
 

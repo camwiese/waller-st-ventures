@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "../../../lib/supabase/server";
 import { notifyNewSession, notifyHighIntent } from "../../../lib/notifications";
+import { getNotificationRecipientsForInvestor, isAnyAdmin } from "../../../lib/adminAuth";
 import {
   computeRawIntentScore,
   getRecencyFactor,
@@ -19,14 +20,17 @@ async function runNotificationsInBackground(user, dealSlug, tabId, inserted, pri
     const serviceClient = createServiceClient();
     const insertedAt = new Date(inserted.created_at).getTime();
 
+    // Get scoped notification recipients (GP + partner who invited this investor)
+    const recipients = await getNotificationRecipientsForInvestor(user.email, serviceClient);
+
     const isFirstVisit = !priorEvents || priorEvents.length === 0;
     if (isFirstVisit) {
-      await notifyNewSession(user.email, true, tabId);
+      await notifyNewSession(user.email, true, tabId, recipients);
     } else {
       const gapMs = insertedAt - new Date(priorEvents[0].created_at).getTime();
       const isNewSession = gapMs > SESSION_GAP_MINUTES * 60 * 1000;
       if (isNewSession) {
-        await notifyNewSession(user.email, false, tabId);
+        await notifyNewSession(user.email, false, tabId, recipients);
       }
     }
 
@@ -60,7 +64,7 @@ async function runNotificationsInBackground(user, dealSlug, tabId, inserted, pri
           .single();
 
         if (upserted) {
-          await notifyHighIntent(user.email, intentScore);
+          await notifyHighIntent(user.email, intentScore, recipients);
         }
       }
     }
@@ -131,15 +135,17 @@ export async function POST(request) {
     .order("created_at", { ascending: false })
     .limit(1);
 
-  const gpEmail = (process.env.GP_EMAIL || "").toLowerCase();
+  const gpEmails = (process.env.GP_EMAIL || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
   const userEmailLower = (user.email || "").toLowerCase();
   const excludeEmails = (process.env.NOTIFICATION_EXCLUDE_EMAILS || "")
     .split(",")
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
-  const shouldExclude =
-    (gpEmail && userEmailLower === gpEmail) ||
-    excludeEmails.includes(userEmailLower);
+  const isAdminUser = gpEmails.includes(userEmailLower) || await isAnyAdmin(userEmailLower);
+  const shouldExclude = isAdminUser || excludeEmails.includes(userEmailLower);
 
   if (!shouldExclude) {
     runNotificationsInBackground(user, dealSlug, tabId, inserted, priorEvents).catch(() => {});

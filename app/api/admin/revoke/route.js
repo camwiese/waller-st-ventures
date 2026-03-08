@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
+import { requireAdminAccess } from "../../../../lib/adminAuth";
 
 export async function POST(request) {
-  // Verify caller is admin
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const gpEmail = (process.env.GP_EMAIL || "").toLowerCase();
-
-  if (!user || user.email?.toLowerCase() !== gpEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  }
+  const auth = await requireAdminAccess(supabase);
+  if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   let body;
   try {
@@ -26,7 +22,7 @@ export async function POST(request) {
   const targetEmail = email.trim().toLowerCase();
 
   // Don't allow revoking own access
-  if (targetEmail === gpEmail) {
+  if (targetEmail === auth.email) {
     return NextResponse.json({ error: "Cannot revoke your own access" }, { status: 400 });
   }
 

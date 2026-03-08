@@ -67,6 +67,7 @@ export async function GET(request) {
     email: targetEmail,
     source: "request_approved",
     invited_by: null,
+    invited_by_email: null,
     notes: null,
   });
 

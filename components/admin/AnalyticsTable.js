@@ -331,6 +331,11 @@ function InvestorCard({ inv, isOpen, onToggle, onRevoke, revoking }) {
           <MetricPill label="Time" value={inv.timeSpent} />
           <MetricPill label="Last" value={inv.lastActive} />
         </div>
+        {(inv.invitedByName || inv.invitedByEmail) && (
+          <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text400, marginTop: 6 }}>
+            Invited by {inv.invitedByName || inv.invitedByEmail}
+          </div>
+        )}
         <div style={{ fontFamily: SANS, fontSize: 13, color: inv.intentScore >= 50 ? COLORS.green700 : COLORS.text500, marginTop: 8 }}>
           {inv.suggestedNextStep}
         </div>
@@ -398,6 +403,9 @@ function InvestorRow({ inv, isOpen, onToggle, onRevoke, revoking }) {
           <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text400, marginRight: 8 }}>{isOpen ? "\u25BE" : "\u25B8"}</span>
           <span style={{ fontWeight: 600, color: COLORS.text900 }}>{inv.email}</span>
         </td>
+        <td style={{ ...td, fontSize: 13, color: COLORS.text500 }}>
+          {inv.invitedByName || inv.invitedByEmail || "\u2014"}
+        </td>
         <td style={{ ...td, textAlign: "right" }}>{inv.visits}</td>
         <td style={{ ...td, textAlign: "right" }}>{inv.timeSpent}</td>
         <td style={{ ...td, textAlign: "right" }}>{inv.lastActive}</td>
@@ -410,7 +418,7 @@ function InvestorRow({ inv, isOpen, onToggle, onRevoke, revoking }) {
       </tr>
       {isOpen && (
         <tr>
-          <td colSpan={6} style={{ padding: "16px 20px 20px 20px", background: COLORS.cream50, borderBottom: `1px solid ${COLORS.border}` }}>
+          <td colSpan={7} style={{ padding: "16px 20px 20px 20px", background: COLORS.cream50, borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ ...sectionLabel, marginBottom: 12 }}>Tab Breakdown</div>
             <div style={{ marginBottom: 24 }}>
               {inv.tabs.map(tab => (
@@ -540,6 +548,7 @@ export default function AnalyticsTable({
   onLoadMore = null,
   hasMore = false,
   loadingMore = false,
+  adminContext = null,
 }) {
   const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState({});
@@ -575,6 +584,15 @@ export default function AnalyticsTable({
   );
   const [accessDataLoading, setAccessDataLoading] = useState(false);
   const [accessDataError, setAccessDataError] = useState(null);
+  const [partners, setPartners] = useState([]);
+  const [partnersLoaded, setPartnersLoaded] = useState(false);
+  const [newPartnerEmail, setNewPartnerEmail] = useState("");
+  const [newPartnerName, setNewPartnerName] = useState("");
+  const [partnerAddStatus, setPartnerAddStatus] = useState("idle");
+  const [partnerError, setPartnerError] = useState(null);
+  const [removingPartner, setRemovingPartner] = useState(null);
+  const [notifyPref, setNotifyPref] = useState(adminContext?.partner?.notify_on_own_invites ?? true);
+  const [notifyPrefSaving, setNotifyPrefSaving] = useState(false);
 
   const toggle = (email) => setExpanded(prev => ({ ...prev, [email]: !prev[email] }));
 
@@ -618,6 +636,96 @@ export default function AnalyticsTable({
       fetchAccessSnapshot();
     }
   }, [view, accessDataLoaded, fetchAccessSnapshot]);
+
+  const fetchPartners = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/partners");
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setPartners(data.partners || []);
+        setPartnersLoaded(true);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    if (view === "settings" && !partnersLoaded) {
+      fetchPartners();
+    }
+  }, [view, partnersLoaded, fetchPartners]);
+
+  const handleAddPartner = async (e) => {
+    e.preventDefault();
+    const email = newPartnerEmail.trim();
+    if (!email || !email.includes("@")) { setPartnerError("Valid email is required"); return; }
+    setPartnerError(null);
+    setPartnerAddStatus("loading");
+    try {
+      const res = await fetch("/api/admin/partners", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name: newPartnerName.trim() || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setNewPartnerEmail("");
+        setNewPartnerName("");
+        setPartnerAddStatus("idle");
+        if (data.partner) {
+          setPartners((prev) => [...prev, data.partner]);
+        }
+        toast.success(`${email} added as partner admin`);
+      } else {
+        setPartnerError(data.error || "Failed to add partner");
+        setPartnerAddStatus("idle");
+        toast.error(data.error || "Failed to add partner");
+      }
+    } catch {
+      setPartnerError("Network error");
+      setPartnerAddStatus("idle");
+      toast.error("Network error");
+    }
+  };
+
+  const handleRemovePartner = async (email) => {
+    if (!confirm(`Remove ${email} as a partner admin? They will lose admin access.`)) return;
+    setRemovingPartner(email);
+    try {
+      const res = await fetch(`/api/admin/partners?email=${encodeURIComponent(email)}`, { method: "DELETE" });
+      if (res.ok) {
+        setPartners((prev) => prev.filter((p) => p.email !== email));
+        toast.success(`${email} removed as partner admin`);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "Failed to remove partner");
+      }
+    } catch {
+      toast.error("Network error");
+    }
+    setRemovingPartner(null);
+  };
+
+  const handleToggleNotifyPref = async (checked) => {
+    setNotifyPref(checked);
+    setNotifyPrefSaving(true);
+    try {
+      const res = await fetch("/api/admin/partners/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notifyOnOwnInvites: checked }),
+      });
+      if (res.ok) {
+        toast.success(checked ? "Notifications enabled" : "Notifications disabled");
+      } else {
+        setNotifyPref(!checked);
+        toast.error("Failed to update preference");
+      }
+    } catch {
+      setNotifyPref(!checked);
+      toast.error("Network error");
+    }
+    setNotifyPrefSaving(false);
+  };
 
   const handleAddRecipient = async (e) => {
     e.preventDefault();
@@ -692,6 +800,7 @@ export default function AnalyticsTable({
               email,
               source: "admin_added",
               invited_at: new Date().toISOString(),
+              invited_by_email: adminContext?.email || null,
             },
             ...prev,
           ];
@@ -777,6 +886,7 @@ export default function AnalyticsTable({
                 email,
                 source: "request_approved",
                 invited_at: new Date().toISOString(),
+                invited_by_email: adminContext?.email || null,
               },
               ...prev,
             ];
@@ -909,6 +1019,7 @@ export default function AnalyticsTable({
       accessByEmail.set(email, {
         email,
         invitedAt: invite.invited_at || null,
+        invitedByEmail: invite.invited_by_email || null,
         requestStatus: null,
         requestId: null,
         requestedAt: null,
@@ -922,6 +1033,7 @@ export default function AnalyticsTable({
       const existing = accessByEmail.get(email) || {
         email,
         invitedAt: null,
+        invitedByEmail: null,
         requestStatus: null,
         requestId: null,
         requestedAt: null,
@@ -1141,6 +1253,7 @@ export default function AnalyticsTable({
                   <thead>
                     <tr style={{ background: COLORS.cream100 }}>
                       <th style={th} onClick={() => handleSort("email")}>Investor{sortArrow("email")}</th>
+                      <th style={th}>Invited by</th>
                       <th style={{ ...th, textAlign: "right" }} onClick={() => handleSort("visits")}>Visits{sortArrow("visits")}</th>
                       <th style={{ ...th, textAlign: "right" }} onClick={() => handleSort("time")}>Time{sortArrow("time")}</th>
                       <th style={{ ...th, textAlign: "right" }}>Last Active</th>
@@ -1291,6 +1404,7 @@ export default function AnalyticsTable({
               <thead>
                 <tr style={{ background: COLORS.cream100 }}>
                   <th style={th}>Email</th>
+                  <th style={th}>Invited by</th>
                   <th style={th}>Status</th>
                   <th style={{ ...th, textAlign: "right" }}>Last Active</th>
                   <th style={{ ...th, textAlign: "right" }}>Visits</th>
@@ -1301,6 +1415,7 @@ export default function AnalyticsTable({
                 {pendingAccessRows.map((row) => (
                   <tr key={row.email}>
                     <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{row.email}</span></td>
+                    <td style={{ ...td, fontSize: 13, color: COLORS.text500 }}>{row.invitedByEmail || "\u2014"}</td>
                     <td style={td}><StatusBadge status={row.status} /></td>
                     <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
                     <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
@@ -1489,6 +1604,102 @@ export default function AnalyticsTable({
                 {accessDataError}
               </div>
             )}
+
+            {/* ---- Team (GP only) ---- */}
+            {adminContext?.isGP && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ ...sectionLabel, marginBottom: 12 }}>Team</div>
+                <p style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text600, marginBottom: 20, lineHeight: 1.5 }}>
+                  Add partner admins who can view analytics, manage investor access, and get notifications for their invitees.
+                </p>
+                <form onSubmit={handleAddPartner} style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
+                  <div style={{ flex: 1, minWidth: 180 }}>
+                    <label style={fieldLabel}>Email</label>
+                    <input
+                      type="email"
+                      value={newPartnerEmail}
+                      onChange={(e) => { setNewPartnerEmail(e.target.value); setPartnerError(null); }}
+                      placeholder="partner@example.com"
+                      style={{ ...inputStyle, padding: "10px 14px", fontSize: 14 }}
+                    />
+                  </div>
+                  <div style={{ minWidth: 140 }}>
+                    <label style={fieldLabel}>Name (optional)</label>
+                    <input
+                      type="text"
+                      value={newPartnerName}
+                      onChange={(e) => setNewPartnerName(e.target.value)}
+                      placeholder="Jane Smith"
+                      style={{ ...inputStyle, padding: "10px 14px", fontSize: 14 }}
+                    />
+                  </div>
+                  <button type="submit" disabled={partnerAddStatus === "loading"} style={{ ...btnPrimary(partnerAddStatus === "loading"), alignSelf: "flex-end" }}>
+                    {partnerAddStatus === "loading" ? "Adding..." : "Add partner"}
+                  </button>
+                </form>
+                {partnerError && <div style={{ color: COLORS.error, fontSize: 13, marginBottom: 12 }}>{partnerError}</div>}
+
+                {partners.length > 0 ? (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: COLORS.cream100 }}>
+                        <th style={th}>Email</th>
+                        <th style={th}>Name</th>
+                        <th style={th}>Notifications</th>
+                        <th style={{ ...th, width: 100 }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {partners.map((p) => (
+                        <tr key={p.id}>
+                          <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{p.email}</span></td>
+                          <td style={{ ...td, color: COLORS.text500 }}>{p.name || "\u2014"}</td>
+                          <td style={td}>
+                            <StatusBadge status={p.notify_on_own_invites ? "active" : "pending_login"} />
+                          </td>
+                          <td style={td}>
+                            <button
+                              type="button"
+                              onClick={() => handleRemovePartner(p.email)}
+                              disabled={removingPartner === p.email}
+                              style={btnDanger(removingPartner === p.email)}
+                            >
+                              {removingPartner === p.email ? "Removing..." : "Remove"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : partnersLoaded ? (
+                  <p style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text500 }}>
+                    No partner admins yet. Add someone above to give them admin access.
+                  </p>
+                ) : null}
+              </div>
+            )}
+
+            {/* ---- Notification Preferences (partner admins) ---- */}
+            {adminContext && !adminContext.isGP && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ ...sectionLabel, marginBottom: 12 }}>Notification Preferences</div>
+                <label style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: SANS, fontSize: 14, color: COLORS.text700, cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={notifyPref}
+                    onChange={(e) => handleToggleNotifyPref(e.target.checked)}
+                    disabled={notifyPrefSaving}
+                    style={{ width: 18, height: 18 }}
+                  />
+                  Email me when my invitees open or return to the data room
+                </label>
+                <p style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text400, marginTop: 8, marginLeft: 28 }}>
+                  You will only receive notifications for investors you personally invited.
+                </p>
+              </div>
+            )}
+
+            {/* ---- Access Request Notification Emails ---- */}
             <div style={{ ...sectionLabel, marginBottom: 16 }}>Access Request Notification Emails</div>
             <p style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text600, marginBottom: 20, lineHeight: 1.5 }}>
               These emails receive a notification (with approve/deny links) whenever someone requests access to the data room.

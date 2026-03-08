@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminEmail } from "../../../../lib/admin";
+import { requireAdminAccess } from "../../../../lib/adminAuth";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
 
 function dedupeRequestsByEmail(requests = []) {
@@ -14,21 +14,19 @@ function dedupeRequestsByEmail(requests = []) {
 
 export async function GET() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const isLocalDevBypass =
     process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
 
-  if (!isLocalDevBypass && (!user || !isAdminEmail(user.email))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  if (!isLocalDevBypass) {
+    const auth = await requireAdminAccess(supabase);
+    if (auth.error) return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
   const serviceClient = createServiceClient();
   const [allowedResult, requestsResult, recipientsResult] = await Promise.all([
     serviceClient
       .from("allowed_emails")
-      .select("id, email, source, invited_at")
+      .select("id, email, source, invited_at, invited_by_email")
       .order("created_at", { ascending: false }),
     serviceClient
       .from("access_requests")
