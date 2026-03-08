@@ -1,9 +1,9 @@
-import { createClient } from "../../lib/supabase/server";
+import { createClient, createServiceClient } from "../../lib/supabase/server";
 import { redirect } from "next/navigation";
 import DataRoomClient from "../../components/DataRoomClient";
 import { getCmsContentByTabs } from "../../lib/cms/content";
 import { TAB_ORDER } from "../../constants/tabs";
-import { isAdminEmail } from "../../lib/admin";
+import { isAnyAdmin } from "../../lib/adminAuth";
 import { ROUTES } from "../../lib/routes";
 
 export const metadata = {
@@ -14,6 +14,7 @@ export const metadata = {
 };
 
 const VALID_TABS = new Set(TAB_ORDER);
+const CURRENT_NDA_VERSION = "1.0";
 
 export default async function HomePage({ searchParams }) {
   const isLocalAuthBypass =
@@ -45,7 +46,36 @@ export default async function HomePage({ searchParams }) {
     redirect(ROUTES.LOGIN);
   }
 
+  // Require NDA agreement before accessing data room (admins bypass)
+  const isAdmin = isLocalAdminBypass || await isAnyAdmin(user.email);
+  if (!isAdmin) {
+    const serviceClient = createServiceClient();
+
+    // Check if NDA is required for this user
+    const { data: allowedRow } = await serviceClient
+      .from("allowed_emails")
+      .select("nda_required")
+      .eq("email", user.email.toLowerCase())
+      .limit(1)
+      .maybeSingle();
+
+    const ndaRequired = allowedRow?.nda_required !== false;
+
+    if (ndaRequired) {
+      const { data: ndaAgreement } = await serviceClient
+        .from("nda_agreements")
+        .select("id")
+        .eq("user_email", user.email.toLowerCase())
+        .eq("nda_version", CURRENT_NDA_VERSION)
+        .limit(1)
+        .maybeSingle();
+
+      if (!ndaAgreement) {
+        redirect(ROUTES.WELCOME);
+      }
+    }
+  }
+
   const cmsContent = await getCmsContentByTabs({ dealSlug: process.env.DEFAULT_DEAL_SLUG || "pst" });
-  const isAdmin = isLocalAdminBypass || isAdminEmail(user.email);
   return <DataRoomClient cmsContent={cmsContent} initialTab={initialTab} isAdmin={isAdmin} />;
 }
