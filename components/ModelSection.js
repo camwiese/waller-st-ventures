@@ -111,7 +111,7 @@ export default function ModelSection({ isMobile, investAmount, setInvestAmount, 
   };
   const handleInvestBlur = () => setInvestAmount((prev) => {
     if (!prev) return 50000;
-    return Math.max(MODEL_DEFAULTS.minInvestment, prev);
+    return Math.min(MODEL_DEFAULTS.maxInvestment, Math.max(MODEL_DEFAULTS.minInvestment, prev));
   });
 
   const phaseScenarios = [{ label: "Conservative", value: 500000000 }, { label: "Target", value: 750000000 }, { label: "Strong", value: 1000000000 }, { label: "Home Run", value: 1250000000 }];

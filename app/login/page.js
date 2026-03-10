@@ -147,11 +147,11 @@ function LoginForm() {
       });
       const json = await res.json();
 
-      if (res.status === 403 && json.error?.code === "not_invited") {
-        setStep("access_requested");
-        setLoading(false);
-        return;
-      }
+      // if (res.status === 403 && json.error?.code === "not_invited") {
+      //   setStep("access_requested");
+      //   setLoading(false);
+      //   return;
+      // }
       if (res.status === 429) {
         setError(json.error?.message || "Too many attempts. Please wait a minute and try again.");
         setLoading(false);
@@ -265,18 +265,18 @@ function LoginForm() {
 
   const firstName = name ? name.split(" ")[0] : "";
 
-  if (step === "access_requested") {
-    return (
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontFamily: SERIF, fontSize: 16, fontWeight: 600, color: COLORS.text900, marginBottom: 12 }}>
-          Access Requested
-        </div>
-        <p style={{ fontFamily: SERIF, fontSize: 14, color: COLORS.text500, lineHeight: 1.6, margin: 0 }}>
-          We will email you access to the WSV data room once approved.
-        </p>
-      </div>
-    );
-  }
+  // if (step === "access_requested") {
+  //   return (
+  //     <div style={{ textAlign: "center" }}>
+  //       <div style={{ fontFamily: SERIF, fontSize: 16, fontWeight: 600, color: COLORS.text900, marginBottom: 12 }}>
+  //         Access Requested
+  //       </div>
+  //       <p style={{ fontFamily: SERIF, fontSize: 14, color: COLORS.text500, lineHeight: 1.6, margin: 0 }}>
+  //         We will email you access to the WSV data room once approved.
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   if (step === "code") {
     return (

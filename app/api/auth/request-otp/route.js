@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "../../../../lib/supabase/server";
-import { notifyAccessRequest } from "../../../../lib/notifications";
 import { getAdminEmails } from "../../../../lib/admin";
 import { isValidEmail, normalizeEmail } from "../../../../lib/email";
 import { randomUUID } from "crypto";
-import { normalizeAppUrl } from "../../../../lib/url";
 import { isAnyAdmin } from "../../../../lib/adminAuth";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -61,67 +59,31 @@ export async function POST(request) {
     }
 
     if (!allowed) {
-      // Not on list — record access request (or reuse existing pending) and notify recipients
-      console.log("[request-otp] Access request path: email=" + normalizedEmail);
-      const baseUrl = normalizeAppUrl(
-        process.env.NEXT_PUBLIC_APP_URL,
-        "https://waller-street-ventures.vercel.app"
-      );
+      // Auto-approve: add email to allowed list and log the access request
+      console.log("[request-otp] Auto-approving email=" + normalizedEmail);
 
-      const { data: existingPending } = await serviceClient
-        .from("access_requests")
-        .select("response_token")
-        .eq("email", normalizedEmail)
-        .eq("status", "pending")
-        .order("requested_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        await serviceClient.from("allowed_emails").insert({
+          email: normalizedEmail,
+          source: "auto_approved",
+          invited_at: new Date().toISOString(),
+          nda_required: true,
+        });
+      } catch (err) {
+        console.error("[request-otp] Failed to auto-add to allowed_emails:", err?.message);
+      }
 
-      let responseToken = existingPending?.response_token;
-      if (!responseToken) {
-        responseToken = randomUUID();
+      // Track the access request for audit purposes
+      try {
+        const responseToken = randomUUID();
         await serviceClient.from("access_requests").insert({
           email: normalizedEmail,
-          status: "pending",
+          status: "auto_approved",
           response_token: responseToken,
         });
-      }
-
-      const approveUrl = `${baseUrl}/api/admin/access-requests/respond?token=${responseToken}&action=approve`;
-      const denyUrl = `${baseUrl}/api/admin/access-requests/respond?token=${responseToken}&action=deny`;
-
-      let recipients = [];
-      try {
-        const { data: rows } = await serviceClient
-          .from("access_request_notification_emails")
-          .select("email")
-          .order("created_at", { ascending: true });
-        recipients = (rows || []).map((r) => r.email);
       } catch (err) {
-        console.error("[request-otp] Failed to fetch notification recipients:", err?.message);
+        console.error("[request-otp] Failed to log access request:", err?.message);
       }
-      if (recipients.length === 0) {
-        recipients = adminEmails.length > 0 ? adminEmails : [];
-      }
-      console.log("[request-otp] Notifying recipients:", recipients.join(", "));
-
-      try {
-        await notifyAccessRequest(normalizedEmail, approveUrl, denyUrl, recipients);
-        console.log("[request-otp] notifyAccessRequest completed");
-      } catch (err) {
-        console.error("[request-otp] notifyAccessRequest failed:", err?.message);
-      }
-
-      return NextResponse.json(
-        {
-          error: {
-            code: "not_invited",
-            message:
-              "You need to request access to view the WSV Data Room. Please contact whoever sent you here and ask them to add you. We've received your request and sent it to our team.",
-          },
-        },
-        { status: 403 }
-      );
     }
   }
 
