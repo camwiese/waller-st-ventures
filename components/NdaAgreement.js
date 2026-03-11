@@ -7,27 +7,23 @@ export const NDA_PREAMBLE = `By accessing this data room, you ("Recipient") agre
 
 export const NDA_TEXT = [
   {
-    heading: "CONFIDENTIAL INFORMATION",
+    heading: "Confidential Information",
     body: `"Confidential Information" means all materials, documents, data, financial information, projections, business plans, trade secrets, and other information contained in this data room relating to the Company's business, operations, financial condition, technology, intellectual property, customers, suppliers, or strategic plans.`,
   },
   {
-    heading: "OBLIGATIONS",
+    heading: "Obligations",
     body: `Recipient agrees to: (a) hold all Confidential Information in strict confidence; (b) not disclose any Confidential Information to any third party without the Company's prior written consent; (c) use the Confidential Information solely to evaluate a potential investment in the Company; (d) protect the Confidential Information with at least the same degree of care used to protect Recipient's own confidential information, but no less than reasonable care; (e) limit access to those employees, advisors, or representatives with a need to know who are bound by comparable confidentiality obligations; and (f) not copy, screenshot, download (except where expressly permitted), or share any Confidential Information or data room access credentials with any unauthorized person.`,
   },
   {
-    heading: "NON-SOLICITATION AND NON-COMPETITION",
-    body: `For a period of twelve (12) months following access to the data room, Recipient agrees not to: (a) directly or indirectly solicit, recruit, or hire any employee, contractor, or consultant of the Company; or (b) use any Confidential Information to develop, market, or sell any product or service that competes with the Company's business.`,
-  },
-  {
-    heading: "NO OBLIGATION OR WARRANTY",
+    heading: "No Obligation or Warranty",
     body: `Nothing herein obligates the Company to proceed with any transaction. Confidential Information is provided "as is" without warranty of any kind as to accuracy or completeness, and the Company shall not be liable for errors, omissions, or actions taken in reliance thereon.`,
   },
   {
-    heading: "TERM AND REMEDIES",
+    heading: "Term and Remedies",
     body: `These obligations survive for three (3) years from the date of acceptance, or until the Confidential Information becomes publicly available through no fault of Recipient, whichever is first. Recipient acknowledges that breach may cause irreparable harm and that the Company may seek injunctive relief in addition to any other available remedies.`,
   },
   {
-    heading: "GOVERNING LAW",
+    heading: "Governing Law",
     body: `This agreement is governed by the laws of the State of Delaware, without regard to conflict of laws principles. Any disputes shall be resolved in the state or federal courts located in Delaware.`,
   },
 ];
