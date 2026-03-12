@@ -16,6 +16,7 @@ import InterviewSection from "./InterviewSection";
 import FAQSection from "./FAQSection";
 import ScienceSection from "./ScienceSection";
 import CallSection from "./CallSection";
+import DeckSection from "./DeckSection";
 import { SectionHeader } from "./Shared";
 import RichTextRenderer from "./RichTextRenderer";
 import CitationsRenderer from "./CitationsRenderer";
@@ -85,7 +86,7 @@ function GenericSection({ isMobile, title, bodyHtml, citations }) {
   );
 }
 
-function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
+function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false, userEmail }) {
   const contentRef = useRef(null);
   const bottomNavRef = useRef(null);
 
@@ -201,6 +202,7 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false }) {
       case "terms": return <TermsSection {...props} />;
       case "model": return <ModelSection {...props} investAmount={investAmount} setInvestAmount={setInvestAmount} />;
       case "memo": return <MemoSection {...props} />;
+      case "deck": return <DeckSection {...props} userEmail={userEmail} />;
       case "interview": return <InterviewSection {...props} />;
       case "faq": return <FAQSection {...props} />;
       case "science": return <ScienceSection {...props} />;

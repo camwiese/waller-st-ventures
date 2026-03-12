@@ -33,6 +33,7 @@ export default async function HomePage({ searchParams }) {
         cmsContent={cmsContent}
         initialTab={initialTab}
         isAdmin={isLocalAdminBypass}
+        userEmail="dev@localhost"
       />
     );
   }
@@ -77,5 +78,5 @@ export default async function HomePage({ searchParams }) {
   }
 
   const cmsContent = await getCmsContentByTabs({ dealSlug: process.env.DEFAULT_DEAL_SLUG || "pst" });
-  return <DataRoomClient cmsContent={cmsContent} initialTab={initialTab} isAdmin={isAdmin} />;
+  return <DataRoomClient cmsContent={cmsContent} initialTab={initialTab} isAdmin={isAdmin} userEmail={user.email} />;
 }

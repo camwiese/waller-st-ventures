@@ -1,9 +1,10 @@
-export const TAB_ORDER = ["overview", "memo", "terms", "faq", "science", "model", "interview", "chat"];
+export const TAB_ORDER = ["overview", "memo", "deck", "terms", "faq", "science", "model", "interview", "chat"];
 
 export const TAB_WEIGHTS = {
   model: 3,
   terms: 3,
   memo: 2,
+  deck: 2,
   faq: 1.5,
   overview: 1,
   interview: 1,
@@ -14,6 +15,7 @@ export const TAB_WEIGHTS = {
 export const TAB_LABELS = {
   overview: "GP Letter",
   memo: "Investment Memo",
+  deck: "Investor Deck",
   terms: "Investment Terms",
   faq: "FAQ",
   science: "Science Primer",
@@ -25,6 +27,7 @@ export const TAB_LABELS = {
 export const NAV_ITEMS = [
   { id: "overview", label: "GP Letter", short: "Letter" },
   { id: "memo", label: "Investment Memo", short: "Memo" },
+  { id: "deck", label: "Investor Deck", short: "Deck" },
   { id: "terms", label: "Investment Terms", short: "Terms" },
   { id: "faq", label: "FAQ", short: "FAQ" },
   { id: "science", label: "Science Primer", short: "Science" },
