@@ -51,16 +51,33 @@ function isSupportingDocument(item) {
   return SUPPORTING_DOCUMENT_IDS.has(knownId) || SUPPORTING_DOCUMENT_LABELS.has(label);
 }
 
+function ensureDeckTab(sections) {
+  if (sections.some((s) => s.knownTabId === "deck" || s.id === "deck")) return sections;
+  const deckItem = {
+    id: "deck",
+    knownTabId: "deck",
+    section: { title: "PST Deck" },
+    blocks: {},
+    navLabel: "PST Deck",
+    shortLabel: "Deck",
+  };
+  const scienceIdx = sections.findIndex((s) => s.knownTabId === "science");
+  const result = [...sections];
+  result.splice(scienceIdx >= 0 ? scienceIdx : result.length, 0, deckItem);
+  return result;
+}
+
 function normalizeSections(cmsContent, isMobile) {
   if (Array.isArray(cmsContent?.orderedSections) && cmsContent.orderedSections.length > 0) {
     const sections = isMobile
       ? cmsContent.orderedSections
       : cmsContent.orderedSections.filter((item) => item.knownTabId !== "chat");
-    return sections.map((item) => ({
+    const withLabels = sections.map((item) => ({
       ...item,
       navLabel: item.section?.title || item.id,
       shortLabel: toShortLabel(item.section?.title || item.id),
     }));
+    return ensureDeckTab(withLabels);
   }
 
   const base = isMobile ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.id !== "chat");
