@@ -36,12 +36,13 @@ function toShortLabel(label) {
   return label.length <= 12 ? label : label.split(" ").slice(0, 2).join(" ");
 }
 
-const SUPPORTING_DOCUMENT_IDS = new Set(["science", "model", "interview", "biotech"]);
+const SUPPORTING_DOCUMENT_IDS = new Set(["science", "model", "interview", "biotech", "deck"]);
 const SUPPORTING_DOCUMENT_LABELS = new Set([
   "science primer",
   "biotech primer",
   "ceo interview",
   "scenario model",
+  "pst deck",
 ]);
 
 function isSupportingDocument(item) {

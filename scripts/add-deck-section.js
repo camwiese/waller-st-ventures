@@ -29,7 +29,7 @@ async function main() {
     .maybeSingle();
 
   if (existing) {
-    console.log("Investor Deck section already exists, skipping.");
+    console.log("PST Deck section already exists, skipping.");
     return;
   }
 
@@ -66,7 +66,7 @@ async function main() {
     .insert({
       deal_id: deal.id,
       slug: "investor-deck",
-      title: "Investor Deck",
+      title: "PST Deck",
       display_order: deckOrder,
       is_visible: true,
       updated_at: new Date().toISOString(),
@@ -79,15 +79,15 @@ async function main() {
     deal_id: deal.id,
     block_id: null,
     section_slug: "investor-deck",
-    section_title: "Investor Deck",
+    section_title: "PST Deck",
     action: "section_add",
-    description: "Added Investor Deck section",
+    description: "Added PST Deck section",
     previous_content: null,
-    new_content: { slug: "investor-deck", title: "Investor Deck" },
+    new_content: { slug: "investor-deck", title: "PST Deck" },
     changed_by: "script",
   });
 
-  console.log("Investor Deck section added successfully (display_order: %d).", deckOrder);
+  console.log("PST Deck section added successfully (display_order: %d).", deckOrder);
 }
 
 main().catch((err) => {

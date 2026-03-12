@@ -15,7 +15,7 @@ export const TAB_WEIGHTS = {
 export const TAB_LABELS = {
   overview: "GP Letter",
   memo: "Investment Memo",
-  deck: "Investor Deck",
+  deck: "PST Deck",
   terms: "Investment Terms",
   faq: "FAQ",
   science: "Science Primer",
@@ -27,7 +27,7 @@ export const TAB_LABELS = {
 export const NAV_ITEMS = [
   { id: "overview", label: "GP Letter", short: "Letter" },
   { id: "memo", label: "Investment Memo", short: "Memo" },
-  { id: "deck", label: "Investor Deck", short: "Deck" },
+  { id: "deck", label: "PST Deck", short: "Deck" },
   { id: "terms", label: "Investment Terms", short: "Terms" },
   { id: "faq", label: "FAQ", short: "FAQ" },
   { id: "science", label: "Science Primer", short: "Science" },

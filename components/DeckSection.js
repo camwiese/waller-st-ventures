@@ -26,7 +26,7 @@ export default function DeckSection({ isMobile, sectionTitle, userEmail }) {
 
   return (
     <div>
-      <SectionHeader title={sectionTitle || "Investor Deck"} isMobile={isMobile} />
+      <SectionHeader title={sectionTitle || "PST Deck"} isMobile={isMobile} />
       <div
         onContextMenu={(e) => e.preventDefault()}
         style={{ userSelect: "none", WebkitUserSelect: "none" }}
