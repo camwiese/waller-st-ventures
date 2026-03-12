@@ -61,13 +61,13 @@ async function main() {
 
   const body = block.content || "";
 
-  // Find the placeholder table that contains "[Table]" and replace it
-  // The placeholder is a TipTap-generated table with [Table] in a header cell
+  // Try placeholder first, then fall back to replacing existing comparison table
   const placeholderPattern = /<table[^>]*>[\s\S]*?\[Table\][\s\S]*?<\/table>/;
-  const match = body.match(placeholderPattern);
+  const existingTablePattern = /<table[^>]*>[\s\S]*?Supply Ratio[\s\S]*?<\/table>/;
+  const match = body.match(placeholderPattern) || body.match(existingTablePattern);
 
   if (!match) {
-    throw new Error('Could not find placeholder [Table] in memo body. It may have already been replaced.');
+    throw new Error('Could not find placeholder [Table] or existing comparison table in memo body.');
   }
 
   const updatedBody = body.slice(0, match.index) + TABLE_HTML + body.slice(match.index + match[0].length);
