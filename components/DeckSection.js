@@ -9,10 +9,16 @@ import { SectionHeader } from "./Shared";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+const PDF_OPTIONS = {
+  standardFontDataUrl: "/pdf/standard_fonts/",
+  cMapUrl: "/pdf/cmaps/",
+  cMapPacked: true,
+};
+
 export default function DeckSection({ isMobile, sectionTitle, userEmail }) {
   const [numPages, setNumPages] = useState(null);
   const [error, setError] = useState(false);
-  const pageWidth = isMobile ? Math.min(window.innerWidth - 40, 720) : 720;
+  const pageWidth = isMobile && typeof window !== "undefined" ? Math.min(window.innerWidth - 40, 720) : 720;
 
   const onDocumentLoadSuccess = useCallback(({ numPages: n }) => {
     setNumPages(n);
@@ -43,6 +49,7 @@ export default function DeckSection({ isMobile, sectionTitle, userEmail }) {
             file="/api/deck"
             onLoadSuccess={onDocumentLoadSuccess}
             onLoadError={() => setError(true)}
+            options={PDF_OPTIONS}
             loading={
               <div style={{
                 fontFamily: SANS,

@@ -50,34 +50,16 @@ function isSupportingDocument(item) {
   return SUPPORTING_DOCUMENT_IDS.has(knownId) || SUPPORTING_DOCUMENT_LABELS.has(label);
 }
 
-const DECK_SECTION = {
-  id: "deck",
-  knownTabId: "deck",
-  section: { title: "Investor Deck" },
-  blocks: {},
-  navLabel: "Investor Deck",
-  shortLabel: "Deck",
-};
-
-function injectDeckTab(sections) {
-  if (sections.some((s) => s.knownTabId === "deck" || s.id === "deck")) return sections;
-  const memoIdx = sections.findIndex((s) => s.knownTabId === "memo");
-  const result = [...sections];
-  result.splice(memoIdx >= 0 ? memoIdx + 1 : 2, 0, DECK_SECTION);
-  return result;
-}
-
 function normalizeSections(cmsContent, isMobile) {
   if (Array.isArray(cmsContent?.orderedSections) && cmsContent.orderedSections.length > 0) {
     const sections = isMobile
       ? cmsContent.orderedSections
       : cmsContent.orderedSections.filter((item) => item.knownTabId !== "chat");
-    const withLabels = sections.map((item) => ({
+    return sections.map((item) => ({
       ...item,
       navLabel: item.section?.title || item.id,
       shortLabel: toShortLabel(item.section?.title || item.id),
     }));
-    return injectDeckTab(withLabels);
   }
 
   const base = isMobile ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.id !== "chat");
