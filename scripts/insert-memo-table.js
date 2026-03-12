@@ -12,11 +12,12 @@ const TABLE_HTML = `<table>
     </tr>
   </thead>
   <tbody>
-    <tr><td>Supply Ratio</td><td>1 donor : 1 patient</td><td>1 donor : 1,000+ patients</td><td>1 donor : 1,000+ patients</td></tr>
+    <tr><td>Supply Ratio</td><td>1 donor : 1 patient</td><td>1 donor : 1,000+ patients</td><td>1 donor : 10,000+ patients</td></tr>
     <tr><td>Procedure</td><td>Complex microsurgery</td><td>Simple injection (~10 min)</td><td>Simple injection (~10 min)</td></tr>
     <tr><td>Recovery</td><td>Days on their back</td><td>1-3 hours face-down</td><td>1-3 hours face-down</td></tr>
     <tr><td>Shelf Life</td><td>Days</td><td>24-96 hours</td><td>Indefinite</td></tr>
-    <tr><td>Est. Cost Per Dose</td><td>~$6,000</td><td>~$60,000</td><td>&lt;$500</td></tr>
+    <tr><td>Est. Production Cost Per Dose</td><td>~$6,000</td><td>~$40,000</td><td>&lt;$500</td></tr>
+    <tr><td>Est. Reimbursement Cost Per Dose</td><td>~$17,000</td><td>~$60,000</td><td>$10,000 – $15,000</td></tr>
     <tr><td>Distribution</td><td>Limited by donor supply</td><td>Limited by shelf life + regional manufacturing</td><td>Standard cold-chain shipping worldwide</td></tr>
     <tr><td>Patient Access</td><td>~14% of global need met</td><td>Developed markets near manufacturing</td><td>Global</td></tr>
   </tbody>
