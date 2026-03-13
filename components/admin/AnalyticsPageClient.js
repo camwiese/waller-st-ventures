@@ -13,6 +13,7 @@ export default function AnalyticsPageClient({ initialData }) {
       allowedEmails={[]}
       accessRequestsNew={[]}
       notificationRecipients={[]}
+      initialShareTokens={initialData.shareTokens || []}
       actionGroups={
         initialData.actionGroups || {
           activeNow: [],

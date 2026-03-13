@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "../../../../../lib/supabase/server";
+import { notifyShareLinkView } from "../../../../../lib/notifications";
+import { getNotificationRecipientsForInvestor } from "../../../../../lib/adminAuth";
 
 const MAX_DURATION = 86400;
 const RATE_LIMIT_PER_HOUR = 100;
@@ -80,5 +82,29 @@ export async function POST(request, { params }) {
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 
+  // Fire-and-forget notification (one per email + content_type)
+  runShareViewNotification(shareToken.email, shareToken.content_type, serviceClient).catch((err) => {
+    console.error("[share/track] Notification error:", err?.message || err);
+  });
+
   return NextResponse.json({ ok: true });
+}
+
+async function runShareViewNotification(email, contentType, serviceClient) {
+  const { data: upserted, error } = await serviceClient
+    .from("share_view_notifications")
+    .upsert(
+      { user_email: email, content_type: contentType, deal_slug: "pst" },
+      { onConflict: "user_email,content_type,deal_slug", ignoreDuplicates: true }
+    )
+    .select("id");
+
+  if (error) {
+    throw error;
+  }
+
+  if (!Array.isArray(upserted) || upserted.length === 0) return;
+
+  const recipients = await getNotificationRecipientsForInvestor(email, serviceClient);
+  await notifyShareLinkView(email, contentType, recipients);
 }

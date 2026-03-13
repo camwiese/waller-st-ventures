@@ -285,7 +285,12 @@ function InvestorCard({ inv, isOpen, onToggle, onRevoke, revoking }) {
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-          <span style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.text900, wordBreak: "break-all", flex: 1, marginRight: 8 }}>{inv.email}</span>
+          <span style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.text900, wordBreak: "break-all", flex: 1, marginRight: 8 }}>
+            {inv.email}
+            {inv.shareOnly && (
+              <span style={{ display: "inline-block", marginLeft: 6, padding: "2px 6px", borderRadius: 8, fontWeight: 600, fontSize: 10, background: COLORS.cream200, color: COLORS.text500, verticalAlign: "middle" }}>Share only</span>
+            )}
+          </span>
           <IntentBadge score={inv.intentScore} heatingUp={inv.heatingUp} />
         </div>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -304,14 +309,37 @@ function InvestorCard({ inv, isOpen, onToggle, onRevoke, revoking }) {
       </button>
       {isOpen && (
         <div style={{ padding: "0 16px 16px", background: COLORS.cream50, borderTop: `1px solid ${COLORS.border}` }}>
-          <div style={{ ...sectionLabel, marginTop: 14, marginBottom: 10 }}>Tab breakdown</div>
-          {inv.tabs.map(tab => (
-            <div key={tab.tabId} style={{ display: "flex", alignItems: "center", padding: "5px 0" }}>
-              <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700, width: 100, flexShrink: 0 }}>{tab.label}</span>
-              <BarChart seconds={tab.seconds} maxSeconds={maxTabSeconds} />
-              <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text900, fontWeight: 600, width: 60, textAlign: "right", flexShrink: 0 }}>{tab.time}</span>
-            </div>
-          ))}
+          {inv.shareEngagement && (
+            <>
+              <div style={{ ...sectionLabel, marginTop: 14, marginBottom: 10 }}>Share link activity</div>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 8 }}>
+                {inv.shareEngagement.deck && (
+                  <>
+                    <MetricPill label="Deck views" value={inv.shareEngagement.deck.sessions} />
+                    <MetricPill label="Deck time" value={inv.shareEngagement.deck.totalViewTime} />
+                  </>
+                )}
+                {inv.shareEngagement.podcast && (
+                  <>
+                    <MetricPill label="Podcast" value={`${inv.shareEngagement.podcast.percentWatched}%`} />
+                    <MetricPill label="Play time" value={inv.shareEngagement.podcast.totalPlayTime} />
+                  </>
+                )}
+              </div>
+            </>
+          )}
+          {inv.tabs.length > 0 && (
+            <>
+              <div style={{ ...sectionLabel, marginTop: 14, marginBottom: 10 }}>Tab breakdown</div>
+              {inv.tabs.map(tab => (
+                <div key={tab.tabId} style={{ display: "flex", alignItems: "center", padding: "5px 0" }}>
+                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700, width: 100, flexShrink: 0 }}>{tab.label}</span>
+                  <BarChart seconds={tab.seconds} maxSeconds={maxTabSeconds} />
+                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text900, fontWeight: 600, width: 60, textAlign: "right", flexShrink: 0 }}>{tab.time}</span>
+                </div>
+              ))}
+            </>
+          )}
           {inv.videoEngagement && (
             <>
               <div style={{ ...sectionLabel, marginTop: 16, marginBottom: 10 }}>Video engagement</div>
@@ -374,6 +402,9 @@ function InvestorRow({ inv, isOpen, onToggle, onRevoke, revoking }) {
         <td style={td}>
           <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text400, marginRight: 8 }}>{isOpen ? "\u25BE" : "\u25B8"}</span>
           <span style={{ fontWeight: 600, color: COLORS.text900 }}>{inv.email}</span>
+          {inv.shareOnly && (
+            <span style={{ display: "inline-block", marginLeft: 8, padding: "2px 8px", borderRadius: 10, fontWeight: 600, fontSize: 11, background: COLORS.cream200, color: COLORS.text500 }}>Share only</span>
+          )}
         </td>
         <td style={{ ...td, fontSize: 13, color: COLORS.text500 }}>
           {inv.invitedByName || inv.invitedByEmail || "\u2014"}
@@ -391,19 +422,70 @@ function InvestorRow({ inv, isOpen, onToggle, onRevoke, revoking }) {
       {isOpen && (
         <tr>
           <td colSpan={7} style={{ padding: "16px 20px 20px 20px", background: COLORS.cream50, borderBottom: `1px solid ${COLORS.border}` }}>
-            <div style={{ ...sectionLabel, marginBottom: 12 }}>Tab Breakdown</div>
-            <div style={{ marginBottom: 24 }}>
-              {inv.tabs.map(tab => (
-                <div key={tab.tabId} style={{ display: "flex", alignItems: "center", padding: "6px 0" }}>
-                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700, width: 140, flexShrink: 0 }}>{tab.label}</span>
-                  <BarChart seconds={tab.seconds} maxSeconds={maxTabSeconds} />
-                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text900, fontWeight: 600, width: 70, textAlign: "right", flexShrink: 0 }}>{tab.time}</span>
-                  {tab.weight > 1 && (
-                    <span style={{ fontFamily: SANS, fontSize: 11, color: COLORS.green700, fontWeight: 600, marginLeft: 8, flexShrink: 0 }}>({tab.weight}x)</span>
+            {inv.shareEngagement && (
+              <>
+                <div style={{ ...sectionLabel, marginBottom: 12 }}>Share Link Activity</div>
+                <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
+                  {inv.shareEngagement.deck && (
+                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                      <span style={{ fontFamily: SANS, fontSize: 12, fontWeight: 700, color: COLORS.text500, textTransform: "uppercase", letterSpacing: "0.04em" }}>Deck</span>
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                        <span style={{ color: COLORS.text400 }}>Views</span>{" "}
+                        <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.shareEngagement.deck.sessions}</span>
+                      </span>
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                        <span style={{ color: COLORS.text400 }}>Time</span>{" "}
+                        <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.shareEngagement.deck.totalViewTime}</span>
+                      </span>
+                      {inv.shareEngagement.deck.lastViewedAt && (
+                        <span style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text400 }}>
+                          Last: {new Date(inv.shareEngagement.deck.lastViewedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {inv.shareEngagement.podcast && (
+                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                      <span style={{ fontFamily: SANS, fontSize: 12, fontWeight: 700, color: COLORS.text500, textTransform: "uppercase", letterSpacing: "0.04em" }}>Podcast</span>
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                        <span style={{ color: COLORS.text400 }}>Sessions</span>{" "}
+                        <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.shareEngagement.podcast.sessions}</span>
+                      </span>
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                        <span style={{ color: COLORS.text400 }}>Play time</span>{" "}
+                        <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.shareEngagement.podcast.totalPlayTime}</span>
+                      </span>
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                        <span style={{ color: COLORS.text400 }}>Listened</span>{" "}
+                        <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.shareEngagement.podcast.percentWatched}%</span>
+                      </span>
+                      {inv.shareEngagement.podcast.lastViewedAt && (
+                        <span style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text400 }}>
+                          Last: {new Date(inv.shareEngagement.podcast.lastViewedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
+            {inv.tabs.length > 0 && (
+              <>
+                <div style={{ ...sectionLabel, marginBottom: 12 }}>Tab Breakdown</div>
+                <div style={{ marginBottom: 24 }}>
+                  {inv.tabs.map(tab => (
+                    <div key={tab.tabId} style={{ display: "flex", alignItems: "center", padding: "6px 0" }}>
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700, width: 140, flexShrink: 0 }}>{tab.label}</span>
+                      <BarChart seconds={tab.seconds} maxSeconds={maxTabSeconds} />
+                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text900, fontWeight: 600, width: 70, textAlign: "right", flexShrink: 0 }}>{tab.time}</span>
+                      {tab.weight > 1 && (
+                        <span style={{ fontFamily: SANS, fontSize: 11, color: COLORS.green700, fontWeight: 600, marginLeft: 8, flexShrink: 0 }}>({tab.weight}x)</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
             {inv.videoEngagement && (
               <>
                 <div style={{ ...sectionLabel, marginBottom: 12 }}>Video Engagement</div>
@@ -544,6 +626,7 @@ export default function AnalyticsTable({
   allowedEmails = [],
   accessRequestsNew = [],
   notificationRecipients = [],
+  initialShareTokens = [],
   actionGroups = { activeNow: [], followUpNow: [], heatingUpList: [], staleHighIntent: [] },
   adminContext = null,
 }) {
@@ -591,8 +674,8 @@ export default function AnalyticsTable({
   const [ndaAuditLoading, setNdaAuditLoading] = useState(false);
   const [generatingShareLink, setGeneratingShareLink] = useState(null);
   const [copiedShareEmail, setCopiedShareEmail] = useState(null);
-  const [shareTokens, setShareTokens] = useState([]);
-  const [shareTokensLoaded, setShareTokensLoaded] = useState(false);
+  const [shareTokens, setShareTokens] = useState(initialShareTokens);
+  const [shareTokensLoaded, setShareTokensLoaded] = useState(initialShareTokens.length > 0);
   const [togglingShareToken, setTogglingShareToken] = useState(null);
 
   const toggle = (email) => setExpanded(prev => ({ ...prev, [email]: !prev[email] }));
@@ -618,6 +701,10 @@ export default function AnalyticsTable({
       setAllowedEmailsState(data.allowedEmails || []);
       setAccessRequestsState(data.accessRequests || []);
       setNotificationRecipientsState(data.notificationRecipients || []);
+      if (data.shareTokens) {
+        setShareTokens(data.shareTokens);
+        setShareTokensLoaded(true);
+      }
       setAccessDataLoaded(true);
     } catch {
       setAccessDataError("Network error");
@@ -1104,6 +1191,26 @@ export default function AnalyticsTable({
     [investors]
   );
 
+  const shareMetricsByEmail = useMemo(() => {
+    const map = new Map();
+    for (const token of shareTokens) {
+      const email = token.email?.toLowerCase();
+      if (!email) continue;
+      if (!map.has(email)) map.set(email, { deck: null, podcast: null });
+      const bucket = map.get(email);
+      const existing = bucket[token.content_type];
+      // Keep the most relevant token (active preferred, highest view count as tiebreak)
+      if (!existing || (token.is_active && !existing.is_active) || token.view_count > (existing.viewCount || 0)) {
+        bucket[token.content_type] = {
+          viewCount: token.view_count,
+          lastViewed: token.last_viewed_at,
+          isActive: token.is_active,
+        };
+      }
+    }
+    return map;
+  }, [shareTokens]);
+
   const accessRows = useMemo(() => {
     const accessByEmail = new Map();
     const emptyAccessRow = (email) => ({
@@ -1145,6 +1252,17 @@ export default function AnalyticsTable({
       accessByEmail.set(email, emptyAccessRow(email));
     }
 
+    // Include share-link-only contacts not already in the list
+    for (const token of shareTokens) {
+      const email = token.email?.toLowerCase();
+      if (!email || accessByEmail.has(email)) continue;
+      accessByEmail.set(email, {
+        ...emptyAccessRow(email),
+        invitedAt: token.created_at || null,
+        hasInvite: false,
+      });
+    }
+
     return [...accessByEmail.values()]
       .map((row) => {
         const investor = investorByEmail.get(row.email) || null;
@@ -1169,7 +1287,7 @@ export default function AnalyticsTable({
         const bTs = new Date(b.invitedAt || b.requestedAt || b.investor?.lastActiveAt || 0).getTime();
         return bTs - aTs;
       });
-  }, [allowedEmailsState, accessRequestsState, investorByEmail, investors]);
+  }, [allowedEmailsState, accessRequestsState, investorByEmail, investors, shareTokens]);
 
   const pendingRequestRows = useMemo(
     () => accessRows.filter((row) => row.status === "pending"),
@@ -1430,6 +1548,8 @@ export default function AnalyticsTable({
                     <th style={th}>Invited At</th>
                     <th style={{ ...th, textAlign: "right" }}>Last Active</th>
                     <th style={{ ...th, textAlign: "right" }}>Visits</th>
+                    <th style={{ ...th, textAlign: "center" }}>Deck</th>
+                    <th style={{ ...th, textAlign: "center" }}>Podcast</th>
                     <th style={{ ...th, textAlign: "center" }}>NDA</th>
                     <th style={{ ...th, width: 260 }}>Actions</th>
                   </tr>
@@ -1437,6 +1557,7 @@ export default function AnalyticsTable({
                 <tbody>
                   {invitedRows.map((row) => {
                     const invite = allowedEmailsState.find((item) => item.email?.toLowerCase() === row.email);
+                    const shareMeta = shareMetricsByEmail.get(row.email);
                     return (
                       <tr key={row.email}>
                         <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{row.email}</span></td>
@@ -1444,6 +1565,24 @@ export default function AnalyticsTable({
                         <td style={td}>{formatRequestDate(row.invitedAt || row.requestedAt)}</td>
                         <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
                         <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
+                        <td style={{ ...td, textAlign: "center", fontSize: 13 }}>
+                          {shareMeta?.deck ? (
+                            <span style={{ fontWeight: 600, color: shareMeta.deck.viewCount > 0 ? COLORS.green800 : COLORS.text500 }}>
+                              {shareMeta.deck.viewCount}
+                            </span>
+                          ) : (
+                            <span style={{ color: COLORS.text400 }}>&mdash;</span>
+                          )}
+                        </td>
+                        <td style={{ ...td, textAlign: "center", fontSize: 13 }}>
+                          {shareMeta?.podcast ? (
+                            <span style={{ fontWeight: 600, color: shareMeta.podcast.viewCount > 0 ? COLORS.green800 : COLORS.text500 }}>
+                              {shareMeta.podcast.viewCount}
+                            </span>
+                          ) : (
+                            <span style={{ color: COLORS.text400 }}>&mdash;</span>
+                          )}
+                        </td>
                         <td style={{ ...td, textAlign: "center" }}>
                           {invite ? (
                             <button
@@ -1571,6 +1710,21 @@ export default function AnalyticsTable({
                             >
                               {st.is_active ? "Deactivate" : "Reactivate"}
                             </button>
+                            {!st.is_active && (
+                              <button
+                                type="button"
+                                onClick={() => handleCopyShareLink(st.email, st.content_type)}
+                                disabled={generatingShareLink === `${st.content_type}:${st.email}`}
+                                style={{
+                                  ...btnBase, fontSize: 11, padding: "5px 10px", minHeight: 32,
+                                  color: COLORS.white,
+                                  background: COLORS.green800,
+                                  opacity: generatingShareLink === `${st.content_type}:${st.email}` ? 0.6 : 1,
+                                }}
+                              >
+                                New Link
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

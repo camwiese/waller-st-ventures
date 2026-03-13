@@ -23,7 +23,7 @@ export async function GET() {
   }
 
   const serviceClient = createServiceClient();
-  const [allowedResult, requestsResult, recipientsResult] = await Promise.all([
+  const [allowedResult, requestsResult, recipientsResult, shareTokensResult] = await Promise.all([
     serviceClient
       .from("allowed_emails")
       .select("id, email, source, invited_at, invited_by_email, nda_required")
@@ -36,9 +36,14 @@ export async function GET() {
       .from("access_request_notification_emails")
       .select("id, email, created_at")
       .order("created_at", { ascending: true }),
+    serviceClient
+      .from("share_tokens")
+      .select("email, content_type, is_active, view_count, last_viewed_at, created_at")
+      .eq("deal_slug", "pst")
+      .order("created_at", { ascending: false }),
   ]);
 
-  if (allowedResult.error || requestsResult.error || recipientsResult.error) {
+  if (allowedResult.error || requestsResult.error || recipientsResult.error || shareTokensResult.error) {
     return NextResponse.json({ error: "Failed to load access data" }, { status: 500 });
   }
 
@@ -49,6 +54,7 @@ export async function GET() {
     allowedEmails: allowedResult.data || [],
     accessRequests: requests,
     notificationRecipients: recipientsResult.data || [],
+    shareTokens: shareTokensResult.data || [],
     pendingAccessCount,
   });
 }
