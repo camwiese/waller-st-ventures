@@ -28,7 +28,7 @@ export async function POST(request) {
   const { mode, durationSeconds, maxPositionSeconds, totalDurationSeconds } = body;
 
   if (
-    !["video", "audio"].includes(mode) ||
+    mode !== "video" ||
     typeof durationSeconds !== "number" ||
     durationSeconds < 1 ||
     durationSeconds > MAX_DURATION ||
@@ -50,7 +50,7 @@ export async function POST(request) {
   const { error } = await serviceClient.from("video_view_events").insert({
     user_email: user.email.toLowerCase(),
     deal_slug: "pst",
-    mode,
+    mode: "video",
     duration_seconds: Math.round(durationSeconds),
     max_position_seconds: Math.round(maxPositionSeconds),
     total_duration_seconds: Math.round(totalDurationSeconds),

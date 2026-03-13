@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
 
   const { data: shareToken, error } = await serviceClient
     .from("share_tokens")
-    .select("id, token, email, content_type, is_active, deal_slug")
+    .select("id, token, email, content_type, is_active, deal_slug, view_count")
     .eq("token", token)
     .single();
 
@@ -30,16 +30,19 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: "This link is no longer available" }, { status: 410 });
   }
 
-  // Update view count and last_viewed_at
-  serviceClient
+  const nextViewCount = (shareToken.view_count || 0) + 1;
+  const lastViewedAt = new Date().toISOString();
+  const { error: updateError } = await serviceClient
     .from("share_tokens")
     .update({
-      view_count: shareToken.view_count + 1 || 1,
-      last_viewed_at: new Date().toISOString(),
+      view_count: nextViewCount,
+      last_viewed_at: lastViewedAt,
     })
-    .eq("id", shareToken.id)
-    .then(() => {})
-    .catch(() => {});
+    .eq("id", shareToken.id);
+
+  if (updateError) {
+    console.error("[share/token] Failed to update view count:", updateError.message);
+  }
 
   // For podcast: generate Mux playback token
   if (shareToken.content_type === "podcast") {
@@ -60,7 +63,6 @@ export async function GET(request, { params }) {
         playbackId,
         token: playbackToken,
         email: shareToken.email,
-        audioUrl: process.env.AUDIO_ONLY_URL || null,
       });
     } catch (err) {
       console.error("[share/token] Mux token error:", err?.message || err);

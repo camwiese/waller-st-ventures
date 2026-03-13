@@ -14,6 +14,11 @@ const REQUIRED_VARS = [
   "RESEND_API_KEY",
   "NEXT_PUBLIC_APP_URL",
   "AUTH_SENDER_EMAIL",
+  "MUX_TOKEN_ID",
+  "MUX_TOKEN_SECRET",
+  "MUX_SIGNING_KEY_ID",
+  "MUX_SIGNING_KEY_PRIVATE",
+  "MUX_PLAYBACK_ID",
 ];
 
 function loadDotEnvFile(filePath) {

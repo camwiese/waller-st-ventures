@@ -45,13 +45,15 @@ export async function POST(request, { params }) {
   }
 
   const { mode, durationSeconds, maxPositionSeconds, totalDurationSeconds } = body;
+  const normalizedMode = shareToken.content_type === "deck" ? null : "video";
 
   // Validate payload
   const durationValid = typeof durationSeconds === "number" && durationSeconds >= 0 && durationSeconds <= MAX_DURATION;
   const maxPosValid = typeof maxPositionSeconds === "number" && maxPositionSeconds >= 0;
   const totalDurValid = typeof totalDurationSeconds === "number" && totalDurationSeconds >= 0;
+  const modeValid = shareToken.content_type === "deck" ? mode == null : mode === "video";
 
-  if (!durationValid || !maxPosValid || !totalDurValid) {
+  if (!durationValid || !maxPosValid || !totalDurValid || !modeValid) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
@@ -65,7 +67,7 @@ export async function POST(request, { params }) {
     user_email: shareToken.email,
     content_type: shareToken.content_type,
     deal_slug: "pst",
-    mode: ["video", "audio"].includes(mode) ? mode : null,
+    mode: normalizedMode,
     duration_seconds: Math.round(durationSeconds),
     max_position_seconds: Math.round(maxPositionSeconds),
     total_duration_seconds: Math.round(totalDurationSeconds),

@@ -32,7 +32,6 @@ export async function GET() {
     return NextResponse.json({
       playbackId,
       token,
-      audioUrl: process.env.AUDIO_ONLY_URL || null,
     });
   } catch (err) {
     console.error("[mux/token] Error generating token:", err?.message || err);

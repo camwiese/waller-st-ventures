@@ -4,31 +4,28 @@ import { useEffect, useRef, useCallback } from "react";
 const HEARTBEAT_INTERVAL_MS = 30_000; // flush every 30s
 
 /**
- * Tracks video/audio playback time and sends heartbeats to a tracking endpoint.
+ * Tracks video playback time and sends heartbeats to a tracking endpoint.
  *
  * @param {Object} options
  * @param {string} options.endpointUrl - API endpoint to POST view events
- * @param {string} options.mode - 'video' or 'audio'
  * @param {number} options.totalDuration - total duration of the media in seconds
- * @param {React.RefObject} options.playerRef - ref to the media element (video/audio) or MuxPlayer
+ * @param {React.RefObject} options.playerRef - ref to the video element or MuxPlayer
  */
-export default function useVideoTracker({ endpointUrl, mode, totalDuration, playerRef }) {
+export default function useVideoTracker({ endpointUrl, totalDuration, playerRef }) {
   const playTimeRef = useRef(0);
   const maxPositionRef = useRef(0);
   const lastTickRef = useRef(null);
   const isPlayingRef = useRef(false);
   const endpointRef = useRef(endpointUrl);
-  const modeRef = useRef(mode);
   const totalDurationRef = useRef(totalDuration);
 
   useEffect(() => { endpointRef.current = endpointUrl; }, [endpointUrl]);
-  useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { totalDurationRef.current = totalDuration; }, [totalDuration]);
 
   const sendPayload = useCallback((durationSeconds) => {
-    if (durationSeconds < 1) return;
+    if (!endpointRef.current || durationSeconds < 1) return;
     const payload = JSON.stringify({
-      mode: modeRef.current,
+      mode: "video",
       durationSeconds: Math.round(durationSeconds),
       maxPositionSeconds: Math.round(maxPositionRef.current),
       totalDurationSeconds: Math.round(totalDurationRef.current || 0),
@@ -63,8 +60,13 @@ export default function useVideoTracker({ endpointUrl, mode, totalDuration, play
   }, [accumulate, sendPayload]);
 
   useEffect(() => {
+    if (!endpointUrl) return;
     const el = playerRef?.current;
     if (!el) return;
+    playTimeRef.current = 0;
+    maxPositionRef.current = 0;
+    lastTickRef.current = null;
+    isPlayingRef.current = false;
 
     const handlePlay = () => {
       isPlayingRef.current = true;
@@ -110,5 +112,5 @@ export default function useVideoTracker({ endpointUrl, mode, totalDuration, play
       clearInterval(heartbeat);
       flush();
     };
-  }, [playerRef, flush, accumulate]);
+  }, [endpointUrl, playerRef, flush, accumulate]);
 }
