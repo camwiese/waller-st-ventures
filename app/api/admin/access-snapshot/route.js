@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdminAccess } from "../../../../lib/adminAuth";
+import { ADMIN_SHARE_TOKEN_COLUMNS } from "../../../../lib/shareTokens";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
 
 function dedupeRequestsByEmail(requests = []) {
@@ -38,7 +39,7 @@ export async function GET() {
       .order("created_at", { ascending: true }),
     serviceClient
       .from("share_tokens")
-      .select("email, content_type, is_active, view_count, last_viewed_at, created_at")
+      .select(ADMIN_SHARE_TOKEN_COLUMNS)
       .eq("deal_slug", "pst")
       .order("created_at", { ascending: false }),
   ]);

@@ -1099,6 +1099,12 @@ export default function AnalyticsTable({
   };
 
   const handleToggleShareToken = async (tokenStr, newActive) => {
+    if (!tokenStr) {
+      toast.error("Share link is missing its token. Refreshing the list.");
+      fetchShareTokens();
+      return;
+    }
+
     setTogglingShareToken(tokenStr);
     try {
       const res = await fetch(`/api/admin/share-token/${tokenStr}`, {
@@ -1106,13 +1112,14 @@ export default function AnalyticsTable({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ is_active: newActive }),
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setShareTokens((prev) =>
           prev.map((t) => t.token === tokenStr ? { ...t, is_active: newActive } : t)
         );
         toast.success(newActive ? "Link reactivated" : "Link deactivated");
       } else {
-        toast.error("Failed to update link");
+        toast.error(data.error || "Failed to update link");
       }
     } catch {
       toast.error("Network error");

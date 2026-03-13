@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "../../../../lib/supabase/server";
 import { requireAdminAccess } from "../../../../lib/adminAuth";
+import { ADMIN_SHARE_TOKEN_COLUMNS } from "../../../../lib/shareTokens";
 import { nanoid } from "nanoid";
 
 export async function POST(request) {
@@ -81,7 +82,7 @@ export async function GET(request) {
   const serviceClient = createServiceClient();
   const { data, error } = await serviceClient
     .from("share_tokens")
-    .select("id, token, email, content_type, is_active, created_at, last_viewed_at, view_count, created_by")
+    .select(ADMIN_SHARE_TOKEN_COLUMNS)
     .eq("deal_slug", "pst")
     .order("created_at", { ascending: false });
 
