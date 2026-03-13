@@ -1106,16 +1106,23 @@ export default function AnalyticsTable({
 
   const accessRows = useMemo(() => {
     const accessByEmail = new Map();
+    const emptyAccessRow = (email) => ({
+      email,
+      invitedAt: null,
+      invitedByEmail: null,
+      requestStatus: null,
+      requestId: null,
+      requestedAt: null,
+      hasInvite: false,
+    });
+
     for (const invite of allowedEmailsState) {
       const email = invite.email?.toLowerCase();
       if (!email) continue;
       accessByEmail.set(email, {
-        email,
+        ...emptyAccessRow(email),
         invitedAt: invite.invited_at || null,
         invitedByEmail: invite.invited_by_email || null,
-        requestStatus: null,
-        requestId: null,
-        requestedAt: null,
         hasInvite: true,
       });
     }
@@ -1123,21 +1130,19 @@ export default function AnalyticsTable({
     for (const req of accessRequestsState) {
       const email = req.email?.toLowerCase();
       if (!email) continue;
-      const existing = accessByEmail.get(email) || {
-        email,
-        invitedAt: null,
-        invitedByEmail: null,
-        requestStatus: null,
-        requestId: null,
-        requestedAt: null,
-        hasInvite: false,
-      };
+      const existing = accessByEmail.get(email) || emptyAccessRow(email);
       accessByEmail.set(email, {
         ...existing,
         requestStatus: req.status,
         requestId: req.id,
         requestedAt: req.requested_at || null,
       });
+    }
+
+    for (const investor of investors) {
+      const email = investor.email?.toLowerCase();
+      if (!email || accessByEmail.has(email)) continue;
+      accessByEmail.set(email, emptyAccessRow(email));
     }
 
     return [...accessByEmail.values()]
@@ -1160,11 +1165,11 @@ export default function AnalyticsTable({
         };
       })
       .sort((a, b) => {
-        const aTs = new Date(a.invitedAt || a.requestedAt || 0).getTime();
-        const bTs = new Date(b.invitedAt || b.requestedAt || 0).getTime();
+        const aTs = new Date(a.invitedAt || a.requestedAt || a.investor?.lastActiveAt || 0).getTime();
+        const bTs = new Date(b.invitedAt || b.requestedAt || b.investor?.lastActiveAt || 0).getTime();
         return bTs - aTs;
       });
-  }, [allowedEmailsState, accessRequestsState, investorByEmail]);
+  }, [allowedEmailsState, accessRequestsState, investorByEmail, investors]);
 
   const pendingRequestRows = useMemo(
     () => accessRows.filter((row) => row.status === "pending"),
@@ -1440,23 +1445,27 @@ export default function AnalyticsTable({
                         <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
                         <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
                         <td style={{ ...td, textAlign: "center" }}>
-                          <button
-                            type="button"
-                            onClick={() => handleToggleNda(row.email, invite?.nda_required === false)}
-                            disabled={togglingNda === row.email}
-                            style={{
-                              ...btnBase,
-                              fontSize: 12,
-                              padding: "6px 14px",
-                              color: invite?.nda_required === false ? COLORS.text500 : COLORS.green800,
-                              background: invite?.nda_required === false ? COLORS.gray100 : COLORS.green100,
-                              border: `1px solid ${invite?.nda_required === false ? COLORS.border : COLORS.green300}`,
-                              cursor: togglingNda === row.email ? "not-allowed" : "pointer",
-                              opacity: togglingNda === row.email ? 0.6 : 1,
-                            }}
-                          >
-                            {invite?.nda_required === false ? "Off" : "On"}
-                          </button>
+                          {invite ? (
+                            <button
+                              type="button"
+                              onClick={() => handleToggleNda(row.email, invite.nda_required === false)}
+                              disabled={togglingNda === row.email}
+                              style={{
+                                ...btnBase,
+                                fontSize: 12,
+                                padding: "6px 14px",
+                                color: invite.nda_required === false ? COLORS.text500 : COLORS.green800,
+                                background: invite.nda_required === false ? COLORS.gray100 : COLORS.green100,
+                                border: `1px solid ${invite.nda_required === false ? COLORS.border : COLORS.green300}`,
+                                cursor: togglingNda === row.email ? "not-allowed" : "pointer",
+                                opacity: togglingNda === row.email ? 0.6 : 1,
+                              }}
+                            >
+                              {invite.nda_required === false ? "Off" : "On"}
+                            </button>
+                          ) : (
+                            <span style={{ color: COLORS.text400 }}>&mdash;</span>
+                          )}
                         </td>
                         <td style={td}>
                           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
