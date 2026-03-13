@@ -52,7 +52,7 @@ export async function GET(request, { params }) {
     }
 
     try {
-      const playbackToken = mux.jwt.signPlaybackId(playbackId, {
+      const playbackToken = await mux.jwt.signPlaybackId(playbackId, {
         keyId: process.env.MUX_SIGNING_KEY_ID,
         keySecret: process.env.MUX_SIGNING_KEY_PRIVATE,
         expiration: "2h",
