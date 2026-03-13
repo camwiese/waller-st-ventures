@@ -19,7 +19,7 @@ export async function GET() {
 
   try {
     const mux = createMuxClient();
-    const token = mux.jwt.signPlaybackId(playbackId, {
+    const token = await mux.jwt.signPlaybackId(playbackId, {
       keyId: signingKeyId,
       keySecret: signingKeyPrivate,
       expiration: "2h",
