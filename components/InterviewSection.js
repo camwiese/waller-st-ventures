@@ -8,6 +8,7 @@ import RichTextRenderer from "./RichTextRenderer";
 import useVideoTracker from "../hooks/useVideoTracker";
 
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
+const MOBILE_PLAYBACK_RATES = "0.75 1 1.25 1.5 2";
 
 export default function InterviewSection({ isMobile, content, sectionTitle }) {
   const hasCmsBody = typeof content?.body === "string" && content.body.trim().length > 0;
@@ -82,8 +83,12 @@ export default function InterviewSection({ isMobile, content, sectionTitle }) {
         {!loading && !error && muxData && (
           <div
             style={{
-              width: "100%", borderRadius: 8, overflow: "hidden",
-              border: `1px solid ${COLORS.border}`, background: "#000",
+              width: "100%",
+              aspectRatio: "16 / 9",
+              borderRadius: 8,
+              overflow: "hidden",
+              border: `1px solid ${COLORS.border}`,
+              background: "#000",
             }}
             onContextMenu={(e) => e.preventDefault()}
           >
@@ -92,7 +97,8 @@ export default function InterviewSection({ isMobile, content, sectionTitle }) {
               playbackId={muxData.playbackId}
               tokens={{ playback: muxData.token }}
               streamType="on-demand"
-              style={{ width: "100%", aspectRatio: "16/9", display: "block", "--controls": "bottom" }}
+              playbackRates={isMobile ? MOBILE_PLAYBACK_RATES : undefined}
+              style={{ width: "100%", height: "100%", display: "block", "--controls": "bottom" }}
               onLoadedMetadata={handleLoadedMetadata}
             />
           </div>

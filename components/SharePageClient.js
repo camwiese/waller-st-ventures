@@ -7,6 +7,7 @@ import useVideoTracker from "../hooks/useVideoTracker";
 
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
 const DeckViewer = dynamic(() => import("./DeckViewer"), { ssr: false });
+const MOBILE_PLAYBACK_RATES = "0.75 1 1.25 1.5 2";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -184,7 +185,6 @@ export default function SharePageClient({ token }) {
                 fontWeight: 600,
                 color: COLORS.green900,
                 margin: "0 0 8px 0",
-                textAlign: "center",
               }}>
                 CEO Interview
               </h1>
@@ -192,7 +192,6 @@ export default function SharePageClient({ token }) {
                 fontFamily: SANS,
                 fontSize: 15,
                 color: COLORS.text500,
-                textAlign: "center",
                 margin: "0 0 24px 0",
                 lineHeight: 1.6,
               }}>
@@ -201,8 +200,12 @@ export default function SharePageClient({ token }) {
 
               <div
                 style={{
-                  width: "100%", borderRadius: 8, overflow: "hidden",
-                  border: `1px solid ${COLORS.border}`, background: "#000",
+                  width: "100%",
+                  aspectRatio: "16 / 9",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  border: `1px solid ${COLORS.border}`,
+                  background: "#000",
                 }}
                 onContextMenu={(e) => e.preventDefault()}
               >
@@ -211,7 +214,8 @@ export default function SharePageClient({ token }) {
                   playbackId={data.playbackId}
                   tokens={{ playback: data.token }}
                   streamType="on-demand"
-                  style={{ width: "100%", aspectRatio: "16/9", display: "block" }}
+                  playbackRates={isMobile ? MOBILE_PLAYBACK_RATES : undefined}
+                  style={{ width: "100%", height: "100%", display: "block" }}
                   onLoadedMetadata={handleLoadedMetadata}
                 />
               </div>
@@ -226,7 +230,6 @@ export default function SharePageClient({ token }) {
                 fontWeight: 600,
                 color: COLORS.green900,
                 margin: "0 0 24px 0",
-                textAlign: "center",
               }}>
                 PST Deck
               </h1>
@@ -244,7 +247,6 @@ export default function SharePageClient({ token }) {
 
       {/* Footer */}
       <footer style={{
-        textAlign: "center",
         padding: isMobile ? "24px 20px 32px" : "32px 40px 40px",
         borderTop: `1px solid ${COLORS.border}`,
       }}>
