@@ -1166,8 +1166,12 @@ export default function AnalyticsTable({
       });
   }, [allowedEmailsState, accessRequestsState, investorByEmail]);
 
-  const pendingAccessRows = useMemo(
-    () => accessRows.filter((row) => row.status !== "active"),
+  const pendingRequestRows = useMemo(
+    () => accessRows.filter((row) => row.status === "pending"),
+    [accessRows]
+  );
+  const invitedRows = useMemo(
+    () => accessRows.filter((row) => row.status !== "pending" && row.status !== "denied"),
     [accessRows]
   );
   const pendingAccessCountLive = useMemo(
@@ -1372,65 +1376,111 @@ export default function AnalyticsTable({
               {inviteError && <div style={{ color: COLORS.error, fontSize: 13, marginBottom: 12 }}>{inviteError}</div>}
             </form>
 
-            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 8 }}>
-              <thead>
-                <tr style={{ background: COLORS.cream100 }}>
-                  <th style={th}>Email</th>
-                  <th style={th}>Invited by</th>
-                  <th style={th}>Status</th>
-                  <th style={{ ...th, textAlign: "right" }}>Last Active</th>
-                  <th style={{ ...th, textAlign: "right" }}>Visits</th>
-                  <th style={{ ...th, width: 250 }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingAccessRows.map((row) => (
-                  <tr key={row.email}>
-                    <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{row.email}</span></td>
-                    <td style={{ ...td, fontSize: 13, color: COLORS.text500 }}>{row.invitedByEmail || "\u2014"}</td>
-                    <td style={td}><StatusBadge status={row.status} /></td>
-                    <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
-                    <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
-                    <td style={td}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      {row.status === "pending" && (
-                        <>
+            <div style={{ padding: isMobile ? 12 : "16px 20px 0" }}>
+              <div style={sectionLabel}>Pending Requests</div>
+            </div>
+            {pendingRequestRows.length > 0 ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 8 }}>
+                <thead>
+                  <tr style={{ background: COLORS.cream100 }}>
+                    <th style={th}>Email</th>
+                    <th style={th}>Invited by</th>
+                    <th style={th}>Status</th>
+                    <th style={{ ...th, textAlign: "right" }}>Last Active</th>
+                    <th style={{ ...th, textAlign: "right" }}>Visits</th>
+                    <th style={{ ...th, width: 180 }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingRequestRows.map((row) => (
+                    <tr key={row.email}>
+                      <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{row.email}</span></td>
+                      <td style={{ ...td, fontSize: 13, color: COLORS.text500 }}>{row.invitedByEmail || "\u2014"}</td>
+                      <td style={td}><StatusBadge status={row.status} /></td>
+                      <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
+                      <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
+                      <td style={td}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                           <button onClick={() => setApproveModal({ email: row.email })} disabled={approving === row.email} style={{ ...btnSmall(approving === row.email), marginRight: 8 }}>Approve</button>
                           <button onClick={() => handleApproveDeny(row.email, "deny")} disabled={approving === row.email} style={btnDanger(approving === row.email)}>Deny</button>
-                        </>
-                      )}
-                      {(row.status === "pending_login" || row.status === "active") && (
-                        <>
-                          <CopyLinkButton
-                            copied={copiedEmail === row.email}
-                            onClick={() => copyInviteLink(row.email)}
-                          />
-                          <ShareLinkButton
-                            type="podcast"
-                            copied={copiedShareEmail === `podcast:${row.email}`}
-                            loading={generatingShareLink === `podcast:${row.email}`}
-                            onClick={() => handleCopyShareLink(row.email, "podcast")}
-                          />
-                          <ShareLinkButton
-                            type="deck"
-                            copied={copiedShareEmail === `deck:${row.email}`}
-                            loading={generatingShareLink === `deck:${row.email}`}
-                            onClick={() => handleCopyShareLink(row.email, "deck")}
-                          />
-                        </>
-                      )}
-                      {row.status === "pending_login" && (
-                        <button type="button" onClick={() => handleSendReminder(row.email)} disabled={reminding === row.email} style={{ ...btnOutline, minHeight: 32, padding: "8px 12px" }}>
-                          {reminding === row.email ? "Sending..." : "Send reminder"}
-                        </button>
-                      )}
-                      </div>
-                    </td>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <EmptyState title="No pending requests" description="New inbound access requests will show up here." />
+            )}
+
+            <div style={{ padding: isMobile ? 12 : "24px 20px 0" }}>
+              <div style={sectionLabel}>Invited & Approved</div>
+            </div>
+            {invitedRows.length > 0 ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 8 }}>
+                <thead>
+                  <tr style={{ background: COLORS.cream100 }}>
+                    <th style={th}>Email</th>
+                    <th style={th}>Status</th>
+                    <th style={th}>Invited At</th>
+                    <th style={{ ...th, textAlign: "right" }}>Last Active</th>
+                    <th style={{ ...th, textAlign: "right" }}>Visits</th>
+                    <th style={{ ...th, textAlign: "center" }}>NDA</th>
+                    <th style={{ ...th, width: 260 }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {pendingAccessRows.length === 0 && <EmptyState title="No access rows yet" description="Invite someone above to get started." />}
+                </thead>
+                <tbody>
+                  {invitedRows.map((row) => {
+                    const invite = allowedEmailsState.find((item) => item.email?.toLowerCase() === row.email);
+                    return (
+                      <tr key={row.email}>
+                        <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{row.email}</span></td>
+                        <td style={td}><StatusBadge status={row.status} /></td>
+                        <td style={td}>{formatRequestDate(row.invitedAt || row.requestedAt)}</td>
+                        <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
+                        <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
+                        <td style={{ ...td, textAlign: "center" }}>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleNda(row.email, invite?.nda_required === false)}
+                            disabled={togglingNda === row.email}
+                            style={{
+                              ...btnBase,
+                              fontSize: 12,
+                              padding: "6px 14px",
+                              color: invite?.nda_required === false ? COLORS.text500 : COLORS.green800,
+                              background: invite?.nda_required === false ? COLORS.gray100 : COLORS.green100,
+                              border: `1px solid ${invite?.nda_required === false ? COLORS.border : COLORS.green300}`,
+                              cursor: togglingNda === row.email ? "not-allowed" : "pointer",
+                              opacity: togglingNda === row.email ? 0.6 : 1,
+                            }}
+                          >
+                            {invite?.nda_required === false ? "Off" : "On"}
+                          </button>
+                        </td>
+                        <td style={td}>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                            <CopyLinkButton
+                              copied={copiedEmail === row.email}
+                              onClick={() => copyInviteLink(row.email)}
+                            />
+                            <ShareLinkButton type="podcast" copied={copiedShareEmail === `podcast:${row.email}`} loading={generatingShareLink === `podcast:${row.email}`} onClick={() => handleCopyShareLink(row.email, "podcast")} />
+                            <ShareLinkButton type="deck" copied={copiedShareEmail === `deck:${row.email}`} loading={generatingShareLink === `deck:${row.email}`} onClick={() => handleCopyShareLink(row.email, "deck")} />
+                            {row.status === "pending_login" && (
+                              <button type="button" onClick={() => handleSendReminder(row.email)} disabled={reminding === row.email} style={{ ...btnOutline, minHeight: 32, padding: "8px 12px" }}>
+                                {reminding === row.email ? "Sending..." : "Send reminder"}
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <EmptyState title="No invited investors yet" description="Invite someone above to get started." />
+            )}
 
             {/* ========== SHARE LINKS SECTION ========== */}
             <div style={{ borderTop: `1px solid ${COLORS.border}`, padding: isMobile ? 12 : 20 }}>
@@ -1444,7 +1494,7 @@ export default function AnalyticsTable({
               </div>
               {shareTokensLoaded && shareTokens.length === 0 && (
                 <div style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text400, padding: "8px 0" }}>
-                  No share links generated yet. Click the headphone or monitor icon next to any user above to create one.
+                  No share links generated yet. Use the podcast or deck buttons in the invited list above to create one.
                 </div>
               )}
               {shareTokensLoaded && shareTokens.length > 0 && (
