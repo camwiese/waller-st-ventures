@@ -19,6 +19,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { COLORS } from "../../../constants/theme";
+import {
+  needsSectionFetch,
+  prepareSectionsForEditor,
+  sortContentBlocks,
+} from "../../../lib/adminContentEditor";
 import KeyValueEditor from "./KeyValueEditor";
 import TextListEditor from "./TextListEditor";
 import FAQEditor from "./FAQEditor";
@@ -40,17 +45,6 @@ const RichTextEditor = dynamic(() => import("./RichTextEditor"), {
 
 function clone(data) {
   return JSON.parse(JSON.stringify(data));
-}
-
-function toSectionState(sections = []) {
-  return sections.map((section) => ({
-    ...section,
-    content_blocks: Array.isArray(section.content_blocks)
-      ? section.content_blocks.slice().sort(
-        (a, b) => (a.display_order || 0) - (b.display_order || 0)
-      )
-      : section.content_blocks ?? null,
-  }));
 }
 
 function humanizeKey(key) {
@@ -133,16 +127,10 @@ function SortablePill({ id, section, isActive, onSelect, onToggleVisibility }) {
 export default function ContentEditor({
   dealSlug,
   sections,
-  initialBlocksBySectionId = {},
   currentUserEmail,
 }) {
   const [draftSections, setDraftSections] = useState(() =>
-    toSectionState(
-      (sections || []).map((section) => ({
-        ...section,
-        content_blocks: initialBlocksBySectionId[section.id] || null,
-      }))
-    )
+    prepareSectionsForEditor(sections || [])
   );
   const [activeSectionId, setActiveSectionId] = useState(() => draftSections[0]?.id || null);
   const [loadingSectionId, setLoadingSectionId] = useState(null);
@@ -153,8 +141,10 @@ export default function ContentEditor({
   const [renaming, setRenaming] = useState(false);
   const [baselineByBlockId, setBaselineByBlockId] = useState(() => {
     const map = new Map();
-    Object.values(initialBlocksBySectionId || {}).forEach((blocks) => {
-      (blocks || []).forEach((block) => map.set(block.id, clone(block.content)));
+    (sections || []).forEach((section) => {
+      (section.content_blocks || []).forEach((block) =>
+        map.set(block.id, clone(block.content))
+      );
     });
     return map;
   });
@@ -171,8 +161,6 @@ export default function ContentEditor({
 
   const draftSectionsRef = useRef(draftSections);
   useEffect(() => { draftSectionsRef.current = draftSections; }, [draftSections]);
-
-  const fetchAbortRef = useRef(null);
 
   const activeSection =
     draftSections.find((s) => s.id === activeSectionId) || draftSections[0];
@@ -196,35 +184,19 @@ export default function ContentEditor({
   }, []);
 
   const loadSectionBlocks = useCallback(async (sectionId) => {
-    if (
-      !sectionId ||
-      typeof sectionId !== "string" ||
-      !sectionId.trim() ||
-      sectionId === "undefined" ||
-      sectionId === "null"
-    ) {
-      return;
-    }
     const section = draftSectionsRef.current.find((s) => s.id === sectionId);
-    if (Array.isArray(section?.content_blocks)) return;
-
-    if (fetchAbortRef.current) fetchAbortRef.current.abort();
-    const controller = new AbortController();
-    fetchAbortRef.current = controller;
+    if (!needsSectionFetch(sectionId, section)) return;
 
     setLoadingSectionId(sectionId);
     try {
       const res = await fetch(
-        `/api/admin/content/sections/${encodeURIComponent(sectionId)}?dealSlug=${encodeURIComponent(dealSlug)}`,
-        { signal: controller.signal }
+        `/api/admin/content/sections/${encodeURIComponent(sectionId)}?dealSlug=${encodeURIComponent(dealSlug)}`
       );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(data?.error || "Failed to load section content");
       }
-      const blocks = (data?.section?.content_blocks || []).slice().sort(
-        (a, b) => (a.display_order || 0) - (b.display_order || 0)
-      );
+      const blocks = sortContentBlocks(data?.section?.content_blocks) || [];
       setDraftSections((prev) =>
         prev.map((s) => (s.id === sectionId ? { ...s, content_blocks: blocks } : s))
       );
@@ -236,13 +208,9 @@ export default function ContentEditor({
         return next;
       });
     } catch (error) {
-      if (error.name === 'AbortError') return;
       window.alert(error.message);
     } finally {
-      if (fetchAbortRef.current === controller) {
-        fetchAbortRef.current = null;
-        setLoadingSectionId(null);
-      }
+      setLoadingSectionId(null);
     }
   }, [dealSlug]);
 
@@ -647,7 +615,9 @@ export default function ContentEditor({
     if (!Array.isArray(activeSection.content_blocks)) {
       return (
         <div style={{ padding: "20px 0", color: COLORS.text500, fontSize: 13 }}>
-          {loadingSectionId === activeSection.id ? "Loading section..." : "Select a section to load content."}
+          {loadingSectionId === activeSection.id
+            ? "Loading section..."
+            : "No content available for this section."}
         </div>
       );
     }

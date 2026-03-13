@@ -1,9 +1,8 @@
-import { redirect } from "next/navigation";
-import { createClient, createServiceClient } from "../../../lib/supabase/server";
+import { createServiceClient } from "../../../lib/supabase/server";
 import { getDealBySlug } from "../../../lib/cms/content";
-import { requireAdminAccess } from "../../../lib/adminAuth";
 import ContentEditorClient from "../../../components/admin/cms/ContentEditorClient";
 import { COLORS } from "../../../constants/theme";
+import { getAdminContext } from "../../../lib/adminContext";
 
 async function ensureMemoSummaryBlock(service, dealId) {
   const { data: memoSection } = await service
@@ -109,21 +108,10 @@ async function ensureContactSettingsBlock(service, dealId) {
 }
 
 export default async function AdminContentPage() {
-  const supabase = await createClient();
-  const isLocalDevBypass =
-    process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_ADMIN_BYPASS === "true";
-
-  let user = null;
-  if (!isLocalDevBypass) {
-    const auth = await requireAdminAccess(supabase);
-    if (auth.error) redirect("/admin");
-    // Partners need can_edit_content permission
-    if (!auth.isGP && !auth.partner?.can_edit_content) redirect("/admin");
-    user = auth.user;
-  } else {
-    const { data } = await supabase.auth.getUser();
-    user = data?.user;
-  }
+  const adminContext = await getAdminContext({
+    redirectTo: "/admin",
+    requireContentEdit: true,
+  });
 
   const dealSlug = process.env.DEFAULT_DEAL_SLUG || "pst";
   const deal = await getDealBySlug(dealSlug);
@@ -142,29 +130,16 @@ export default async function AdminContentPage() {
 
   const { data: sections } = await service
     .from("content_sections")
-    .select("id, slug, title, display_order, is_visible")
+    .select("id, slug, title, display_order, is_visible, content_blocks(id, key, type, content, display_order, updated_at)")
     .eq("deal_id", deal.id)
     .order("display_order", { ascending: true });
-
-  const initialSectionId = sections?.[0]?.id || null;
-  let initialBlocks = null;
-  if (initialSectionId) {
-    const { data: initialSection } = await service
-      .from("content_sections")
-      .select("id, content_blocks(id, key, type, content, display_order, updated_at)")
-      .eq("id", initialSectionId)
-      .eq("deal_id", deal.id)
-      .single();
-    initialBlocks = initialSection?.content_blocks || [];
-  }
 
   return (
     <ContentEditorClient
       dealSlug={dealSlug}
       dealId={deal.id}
       sections={sections}
-      initialBlocksBySectionId={initialSectionId ? { [initialSectionId]: initialBlocks } : {}}
-      currentUserEmail={user?.email || process.env.GP_EMAIL || "local-dev-admin"}
+      currentUserEmail={adminContext.email || process.env.GP_EMAIL || "local-dev-admin"}
     />
   );
 }

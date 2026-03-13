@@ -27,7 +27,7 @@ export default function AdminLoading() {
         </div>
         {/* Tab bar skeleton */}
         <div style={{ display: "flex", gap: 0, borderBottom: `1px solid ${COLORS.border}`, marginBottom: 0 }}>
-          {[80, 100, 80, 110, 70].map((w, i) => (
+          {[90, 90, 90].map((w, i) => (
             <div key={i} style={{ height: 44, width: w, borderRadius: "8px 8px 0 0", background: i === 0 ? COLORS.white : "transparent", border: i === 0 ? `1px solid ${COLORS.border}` : "none", borderBottom: i === 0 ? `1px solid ${COLORS.white}` : "none" }} />
           ))}
         </div>
