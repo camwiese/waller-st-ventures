@@ -67,6 +67,19 @@ const btnOutline = {
   border: `1px solid ${COLORS.border}`,
 };
 
+const iconButtonBase = {
+  ...btnBase,
+  width: 36,
+  height: 36,
+  minHeight: 36,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: `1px solid ${COLORS.border}`,
+  background: COLORS.white,
+  color: COLORS.text500,
+};
+
 const cardStyle = {
   background: COLORS.white, border: `1px solid ${COLORS.border}`,
   borderRadius: 10, padding: 16, marginBottom: 10,
@@ -125,8 +138,9 @@ function StatusBadge({ status }) {
   const s = styles[status] || styles.pending;
   return (
     <span style={{
-      display: "inline-block", padding: "3px 10px", borderRadius: 12,
+      display: "inline-flex", padding: "3px 10px", borderRadius: 12,
       fontWeight: 600, fontSize: 12, background: s.bg, color: s.color,
+      whiteSpace: "nowrap", lineHeight: 1.2,
     }}>
       {status === "active" ? "Active" : status === "pending_login" ? "Pending login" : status.replace(/_/g, " ")}
     </span>
@@ -138,15 +152,6 @@ function BarChart({ seconds, maxSeconds }) {
   return (
     <div style={{ flex: 1, height: 8, background: COLORS.border, borderRadius: 4, overflow: "hidden", margin: "0 12px" }}>
       <div style={{ width: `${pct}%`, height: "100%", background: COLORS.green600, borderRadius: 4 }} />
-    </div>
-  );
-}
-
-function FunnelBar({ count, total }) {
-  const pct = total > 0 ? (count / total) * 100 : 0;
-  return (
-    <div style={{ flex: 1, height: 10, background: COLORS.border, borderRadius: 5, overflow: "hidden", margin: "0 12px" }}>
-      <div style={{ width: `${pct}%`, height: "100%", background: COLORS.green600, borderRadius: 5 }} />
     </div>
   );
 }
@@ -183,120 +188,42 @@ function EmptyState({ title, description }) {
   );
 }
 
-// --- Filter Chips ---
+function CopyIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <rect x="7" y="3" width="10" height="12" rx="2" />
+      <path d="M5 7H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1" />
+    </svg>
+  );
+}
 
-function FilterChip({ label, active, count, onClick }) {
+function CopyLinkButton({ copied, disabled = false, onClick }) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      disabled={disabled}
+      aria-label={copied ? "Invite link copied" : "Copy invite link"}
+      title={copied ? "Invite link copied" : "Copy invite link"}
       style={{
-        fontFamily: SANS, fontSize: 13, fontWeight: active ? 600 : 400,
-        color: active ? COLORS.green900 : COLORS.text500,
-        background: active ? COLORS.green100 : COLORS.gray100,
-        border: active ? `1px solid ${COLORS.green300}` : `1px solid ${COLORS.border}`,
-        borderRadius: 20, padding: "7px 14px", cursor: "pointer",
-        transition: "all 0.15s ease", whiteSpace: "nowrap", minHeight: 36,
+        ...iconButtonBase,
+        color: copied ? COLORS.green800 : COLORS.text500,
+        borderColor: copied ? COLORS.green300 : COLORS.border,
+        background: copied ? COLORS.green100 : COLORS.white,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
       }}
     >
-      {label}{count != null ? ` (${count})` : ""}
+      <CopyIcon />
     </button>
-  );
-}
-
-// --- Today Action Dashboard ---
-
-function ActionCard({ title, count, description, color, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        ...cardStyle,
-        cursor: "pointer", textAlign: "left", width: "100%",
-        borderLeft: `4px solid ${color}`, marginBottom: 10,
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <span style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.text900 }}>{title}</span>
-        <span style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 600, color, lineHeight: 1 }}>{count}</span>
-      </div>
-      <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text500, marginTop: 4 }}>{description}</div>
-    </button>
-  );
-}
-
-function TodayDashboard({ actionGroups, pendingAccessCount, summary, onNavigate }) {
-  return (
-    <div style={{ marginBottom: 20 }}>
-      <div style={{ ...sectionLabel, marginBottom: 12 }}>Action items</div>
-      {pendingAccessCount > 0 && (
-        <ActionCard
-          title="Pending approvals"
-          count={pendingAccessCount}
-          description="Requests waiting for your review"
-          color={COLORS.green700}
-          onClick={() => onNavigate("access")}
-        />
-      )}
-      {actionGroups.heatingUpList.length > 0 && (
-        <ActionCard
-          title="Heating up"
-          count={actionGroups.heatingUpList.length}
-          description="Accelerating engagement this week"
-          color={COLORS.green600}
-          onClick={() => onNavigate("investors", "heatingUp")}
-        />
-      )}
-      {actionGroups.followUpNow.length > 0 && (
-        <ActionCard
-          title="Follow up now"
-          count={actionGroups.followUpNow.length}
-          description="High intent \u2014 schedule a call or send email"
-          color={COLORS.green800}
-          onClick={() => onNavigate("investors", "followUp")}
-        />
-      )}
-      {actionGroups.staleHighIntent.length > 0 && (
-        <ActionCard
-          title="Re-engage"
-          count={actionGroups.staleHighIntent.length}
-          description="Were engaged but quiet for 7+ days"
-          color={COLORS.text400}
-          onClick={() => onNavigate("investors", "stale")}
-        />
-      )}
-      {actionGroups.activeNow.length > 0 && (
-        <ActionCard
-          title="Active today"
-          count={actionGroups.activeNow.length}
-          description="Viewed the data room in last 24 hours"
-          color={COLORS.green500}
-          onClick={() => onNavigate("investors", "active24h")}
-        />
-      )}
-      {pendingAccessCount === 0 && actionGroups.followUpNow.length === 0 && actionGroups.heatingUpList.length === 0 && actionGroups.activeNow.length === 0 && (
-        <div style={cardStyle}>
-          <div style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text500, textAlign: "center", padding: "12px 0" }}>
-            No urgent actions right now. Check back later.
-          </div>
-        </div>
-      )}
-      <div style={{ ...sectionLabel, marginTop: 20, marginBottom: 12 }}>Overview</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <SummaryCardCompact value={summary.totalInvestors} label="Investors" />
-        <SummaryCardCompact value={summary.activeToday} label="Active today" />
-        <SummaryCardCompact value={summary.totalTime} label="Total time" />
-        <SummaryCardCompact value={summary.avgPages} label="Avg pages" />
-      </div>
-    </div>
-  );
-}
-
-function SummaryCardCompact({ value, label }) {
-  return (
-    <div style={{ ...cardStyle, textAlign: "center", padding: "14px 12px", marginBottom: 0 }}>
-      <div style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 600, color: COLORS.green900, lineHeight: 1 }}>{value}</div>
-      <div style={{ fontFamily: SANS, fontSize: 11, color: COLORS.text400, marginTop: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
-    </div>
   );
 }
 
@@ -490,9 +417,12 @@ function RequestCardMobile({ request, onApprove, onDeny, onCopyLink, approving, 
         </div>
       )}
       {request.status === "approved" && (
-        <button onClick={() => onCopyLink(request.email)} style={{ ...btnSmall(false), width: "100%", background: copiedEmail === request.email ? COLORS.green600 : COLORS.green800 }}>
-          {copiedEmail === request.email ? "Copied!" : "Copy invite link"}
-        </button>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <CopyLinkButton
+            copied={copiedEmail === request.email}
+            onClick={() => onCopyLink(request.email)}
+          />
+        </div>
       )}
     </div>
   );
@@ -510,10 +440,11 @@ function InviteCardMobile({ item, onCopyLink, copiedEmail, onToggleNda, toggling
       <div style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text500, marginBottom: 10 }}>
         {item.invited_at ? formatRequestDate(item.invited_at) : "Direct invite"}
       </div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-        <button onClick={() => onCopyLink(item.email)} style={{ ...btnSmall(false), flex: 1, background: copiedEmail === item.email ? COLORS.green600 : COLORS.green800 }}>
-          {copiedEmail === item.email ? "Copied!" : "Copy invite link"}
-        </button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
+        <CopyLinkButton
+          copied={copiedEmail === item.email}
+          onClick={() => onCopyLink(item.email)}
+        />
         <button
           type="button"
           onClick={() => onToggleNda(item.email, item.nda_required === false)}
@@ -534,21 +465,6 @@ function InviteCardMobile({ item, onCopyLink, copiedEmail, onToggleNda, toggling
   );
 }
 
-// --- Mobile Page Analytics Card ---
-
-function PageCardMobile({ page }) {
-  return (
-    <div style={cardStyle}>
-      <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.text900, marginBottom: 8 }}>{page.label}</div>
-      <div style={{ display: "flex", gap: 16 }}>
-        <MetricPill label="Viewers" value={page.uniqueViewers} />
-        <MetricPill label="Avg" value={page.avgTime} />
-        <MetricPill label="Total" value={page.totalTime} />
-      </div>
-    </div>
-  );
-}
-
 // ==========================================
 // Main Component
 // ==========================================
@@ -556,26 +472,16 @@ function PageCardMobile({ page }) {
 export default function AnalyticsTable({
   summary,
   investors,
-  pages,
   totalInvestors,
   allowedEmails = [],
   accessRequestsNew = [],
   notificationRecipients = [],
   actionGroups = { activeNow: [], followUpNow: [], heatingUpList: [], staleHighIntent: [] },
-  onLoadMore = null,
-  hasMore = false,
-  loadingMore = false,
   adminContext = null,
 }) {
   const isMobile = useIsMobile();
   const [expanded, setExpanded] = useState({});
-  const [view, setView] = useState(() => {
-    if (typeof window !== "undefined" && window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches) {
-      return "today";
-    }
-    return "investors";
-  });
-  const [filter, setFilter] = useState("all");
+  const [view, setView] = useState("investors");
   const [sortKey, setSortKey] = useState("intentScore");
   const [sortDir, setSortDir] = useState("desc");
   const [revoking, setRevoking] = useState(null);
@@ -624,12 +530,6 @@ export default function AnalyticsTable({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [approveModal]);
-
-  const handleNavigate = useCallback((targetView, targetFilter) => {
-    setView(targetView);
-    if (targetFilter) setFilter(targetFilter);
-    else setFilter("all");
-  }, []);
 
   const fetchAccessSnapshot = useCallback(async () => {
     if (accessDataLoading) return;
@@ -1022,45 +922,14 @@ export default function AnalyticsTable({
     else { setSortKey(key); setSortDir("desc"); }
   };
 
-  // --- Filtering + Sorting ---
-
-  const filteredInvestors = useMemo(
+  const visibleInvestors = useMemo(
     () => investors.filter((inv) => !revoked.has(inv.email)),
     [investors, revoked]
-  );
-  const activeEmails = useMemo(
-    () => new Set(actionGroups.activeNow.map((i) => i.email)),
-    [actionGroups.activeNow]
-  );
-  const followUpEmails = useMemo(
-    () => new Set(actionGroups.followUpNow.map((i) => i.email)),
-    [actionGroups.followUpNow]
-  );
-  const heatingUpEmails = useMemo(
-    () => new Set(actionGroups.heatingUpList.map((i) => i.email)),
-    [actionGroups.heatingUpList]
-  );
-  const staleEmails = useMemo(
-    () => new Set(actionGroups.staleHighIntent.map((i) => i.email)),
-    [actionGroups.staleHighIntent]
-  );
-
-  const chipFilteredInvestors = useMemo(
-    () =>
-      filteredInvestors.filter((inv) => {
-        if (filter === "all") return true;
-        if (filter === "active24h") return activeEmails.has(inv.email);
-        if (filter === "followUp") return followUpEmails.has(inv.email);
-        if (filter === "heatingUp") return heatingUpEmails.has(inv.email);
-        if (filter === "stale") return staleEmails.has(inv.email);
-        return true;
-      }),
-    [filteredInvestors, filter, activeEmails, followUpEmails, heatingUpEmails, staleEmails]
   );
 
   const sortedInvestors = useMemo(
     () =>
-      [...chipFilteredInvestors].sort((a, b) => {
+      [...visibleInvestors].sort((a, b) => {
         let aVal;
         let bVal;
         switch (sortKey) {
@@ -1089,7 +958,7 @@ export default function AnalyticsTable({
         }
         return sortDir === "asc" ? aVal - bVal : bVal - aVal;
       }),
-    [chipFilteredInvestors, sortKey, sortDir]
+    [visibleInvestors, sortKey, sortDir]
   );
   const legacyPendingCount = 0;
   const legacyRequests = [];
@@ -1176,16 +1045,13 @@ export default function AnalyticsTable({
 
   const views = isMobile
     ? [
-        { id: "today", label: "Today" },
         { id: "investors", label: "Investors" },
-        { id: "access", label: `Access${pendingAccessCountLive > 0 ? ` (${pendingAccessCountLive})` : ""}` },
-        { id: "pages", label: "Pages" },
+        { id: "access", label: `Invites${pendingAccessCountLive > 0 ? ` (${pendingAccessCountLive})` : ""}` },
         { id: "settings", label: "Settings" },
       ]
     : [
         { id: "investors", label: "Investors" },
-        { id: "pages", label: "Page Analytics" },
-        { id: "access", label: `Access${pendingAccessCountLive > 0 ? ` (${pendingAccessCountLive})` : ""}` },
+        { id: "access", label: `Invites${pendingAccessCountLive > 0 ? ` (${pendingAccessCountLive})` : ""}` },
         { id: "settings", label: "Settings" },
       ];
 
@@ -1205,7 +1071,7 @@ export default function AnalyticsTable({
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: isMobile ? "16px 12px" : "24px 16px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
           <h1 style={{ margin: 0, fontFamily: SERIF, fontSize: isMobile ? 22 : 26, color: COLORS.text900 }}>
-            Investor Analytics
+            Investor Access
           </h1>
         </div>
 
@@ -1237,67 +1103,34 @@ export default function AnalyticsTable({
                 {v.label}
               </a>
             ) : (
-              <button key={v.id} onClick={() => { setView(v.id); if (v.id !== "investors") setFilter("all"); }} style={tabStyle(view === v.id)}>
+              <button key={v.id} onClick={() => setView(v.id)} style={tabStyle(view === v.id)}>
                 {v.label}
               </button>
             )
           ))}
         </div>
 
-        {/* ========== TODAY (mobile only) ========== */}
-        {view === "today" && (
-          <div style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderTop: "none", borderRadius: "0 0 12px 12px", padding: 16 }}>
-            <TodayDashboard
-              actionGroups={actionGroups}
-              pendingAccessCount={pendingAccessCountLive}
-              summary={summary}
-              onNavigate={handleNavigate}
-            />
-          </div>
-        )}
-
         {/* ========== INVESTORS ========== */}
         {view === "investors" && (
           <div style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
-            {/* Filter chips */}
-            <div style={{ padding: isMobile ? "12px 12px 8px" : "12px 16px 8px", display: "flex", gap: 8, overflowX: "auto", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
-              <FilterChip label="All" active={filter === "all"} count={filteredInvestors.length} onClick={() => setFilter("all")} />
-              {actionGroups.followUpNow.length > 0 && <FilterChip label="Follow up" active={filter === "followUp"} count={actionGroups.followUpNow.length} onClick={() => setFilter("followUp")} />}
-              {actionGroups.heatingUpList.length > 0 && <FilterChip label="Heating up" active={filter === "heatingUp"} count={actionGroups.heatingUpList.length} onClick={() => setFilter("heatingUp")} />}
-              {actionGroups.activeNow.length > 0 && <FilterChip label="Active 24h" active={filter === "active24h"} count={actionGroups.activeNow.length} onClick={() => setFilter("active24h")} />}
-              {actionGroups.staleHighIntent.length > 0 && <FilterChip label="Re-engage" active={filter === "stale"} count={actionGroups.staleHighIntent.length} onClick={() => setFilter("stale")} />}
+            <div style={{ padding: isMobile ? "12px 12px 10px" : "14px 16px 12px", borderBottom: `1px solid ${COLORS.border}` }}>
+              <div style={{ ...sectionLabel, marginBottom: 8 }}>Viewer activity</div>
+              <div style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500, lineHeight: 1.5 }}>
+                {totalInvestors} viewers tracked
+                {` \u00b7 `}
+                {actionGroups.activeNow.length} active today
+                {` \u00b7 `}
+                {actionGroups.followUpNow.length} need follow-up
+              </div>
             </div>
 
             {sortedInvestors.length === 0 && investors.length === 0 && accessRows.length === 0 ? (
-              <EmptyState title="No investor activity yet" description="Analytics will appear here as investors access the deal room." />
-            ) : sortedInvestors.length === 0 ? (
-              <EmptyState title="No investors match this filter" description="Try a different filter." />
+              <EmptyState title="No investor activity yet" description="Investor activity will appear here as people access the deal room." />
             ) : isMobile ? (
               <div style={{ padding: "8px 12px 12px" }}>
                 {sortedInvestors.map(inv => (
                   <InvestorCard key={inv.email} inv={inv} isOpen={!!expanded[inv.email]} onToggle={() => toggle(inv.email)} onRevoke={handleRevoke} revoking={revoking} />
                 ))}
-                {onLoadMore && hasMore && (
-                  <button
-                    type="button"
-                    onClick={onLoadMore}
-                    disabled={loadingMore}
-                    style={{
-                      marginTop: 12,
-                      width: "100%",
-                      border: `1px solid ${COLORS.border}`,
-                      background: COLORS.white,
-                      borderRadius: 8,
-                      padding: "10px 12px",
-                      cursor: loadingMore ? "not-allowed" : "pointer",
-                      color: COLORS.text700,
-                      fontFamily: SANS,
-                      fontSize: 13,
-                    }}
-                  >
-                    {loadingMore ? "Loading..." : "Load more investors"}
-                  </button>
-                )}
               </div>
             ) : (
               <>
@@ -1355,91 +1188,6 @@ export default function AnalyticsTable({
                     ))}
                   </tbody>
                 </table>
-                {onLoadMore && hasMore && (
-                  <div style={{ padding: "12px 16px", borderTop: `1px solid ${COLORS.border}` }}>
-                    <button
-                      type="button"
-                      onClick={onLoadMore}
-                      disabled={loadingMore}
-                      style={{
-                        border: `1px solid ${COLORS.border}`,
-                        background: COLORS.white,
-                        borderRadius: 8,
-                        padding: "10px 14px",
-                        cursor: loadingMore ? "not-allowed" : "pointer",
-                        color: COLORS.text700,
-                        fontFamily: SANS,
-                        fontSize: 13,
-                      }}
-                    >
-                      {loadingMore ? "Loading..." : "Load more investors"}
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
-        {/* ========== PAGE ANALYTICS ========== */}
-        {view === "pages" && (
-          <div style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
-            {isMobile ? (
-              <div style={{ padding: "12px 12px" }}>
-                {pages.map(page => (
-                  <PageCardMobile key={page.tabId} page={page} />
-                ))}
-                {/* Funnel */}
-                <div style={{ ...sectionLabel, marginTop: 16, marginBottom: 12 }}>
-                  Funnel{totalInvestors > 0 ? ` (of ${totalInvestors})` : ""}
-                </div>
-                {pages.filter(p => p.uniqueViewers > 0).sort((a, b) => b.uniqueViewers - a.uniqueViewers).map(page => (
-                  <div key={page.tabId} style={{ display: "flex", alignItems: "center", padding: "5px 0" }}>
-                    <span style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text700, width: 90, flexShrink: 0 }}>{page.label}</span>
-                    <FunnelBar count={page.uniqueViewers} total={totalInvestors} />
-                    <span style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text900, fontWeight: 600, width: 50, textAlign: "right", flexShrink: 0 }}>
-                      {page.uniqueViewers} ({totalInvestors > 0 ? Math.round((page.uniqueViewers / totalInvestors) * 100) : 0}%)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: COLORS.cream100 }}>
-                      <th style={th}>Page</th>
-                      <th style={{ ...th, textAlign: "right" }}>Unique Viewers</th>
-                      <th style={{ ...th, textAlign: "right" }}>Avg Time</th>
-                      <th style={{ ...th, textAlign: "right" }}>Total Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pages.map(page => (
-                      <tr key={page.tabId}>
-                        <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900 }}>{page.label}</span></td>
-                        <td style={{ ...td, textAlign: "right" }}>{page.uniqueViewers}</td>
-                        <td style={{ ...td, textAlign: "right" }}>{page.avgTime}</td>
-                        <td style={{ ...td, textAlign: "right" }}>{page.totalTime}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div style={{ padding: "28px 20px", borderTop: `1px solid ${COLORS.border}` }}>
-                  <div style={{ ...sectionLabel, marginBottom: 16 }}>
-                    Funnel{totalInvestors > 0 ? ` (of ${totalInvestors} total investors)` : ""}
-                  </div>
-                  {pages.filter(p => p.uniqueViewers > 0).sort((a, b) => b.uniqueViewers - a.uniqueViewers).map(page => (
-                    <div key={page.tabId} style={{ display: "flex", alignItems: "center", padding: "5px 0" }}>
-                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text700, width: 140, flexShrink: 0 }}>{page.label}</span>
-                      <FunnelBar count={page.uniqueViewers} total={totalInvestors} />
-                      <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text900, fontWeight: 600, width: 30, textAlign: "right", flexShrink: 0 }}>{page.uniqueViewers}</span>
-                      <span style={{ fontFamily: SANS, fontSize: 12, color: COLORS.text400, width: 50, textAlign: "right", flexShrink: 0 }}>
-                        ({totalInvestors > 0 ? Math.round((page.uniqueViewers / totalInvestors) * 100) : 0}%)
-                      </span>
-                    </div>
-                  ))}
-                </div>
               </>
             )}
           </div>
@@ -1496,7 +1244,7 @@ export default function AnalyticsTable({
                   <th style={th}>Status</th>
                   <th style={{ ...th, textAlign: "right" }}>Last Active</th>
                   <th style={{ ...th, textAlign: "right" }}>Visits</th>
-                  <th style={{ ...th, width: 340 }}>Actions</th>
+                  <th style={{ ...th, width: 250 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -1508,22 +1256,25 @@ export default function AnalyticsTable({
                     <td style={{ ...td, textAlign: "right" }}>{row.lastActive}</td>
                     <td style={{ ...td, textAlign: "right" }}>{row.visits}</td>
                     <td style={td}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                       {row.status === "pending" && (
                         <>
                           <button onClick={() => setApproveModal({ email: row.email })} disabled={approving === row.email} style={{ ...btnSmall(approving === row.email), marginRight: 8 }}>Approve</button>
-                          <button onClick={() => handleApproveDeny(row.email, "deny")} disabled={approving === row.email} style={{ ...btnDanger(approving === row.email), marginRight: 8 }}>Deny</button>
+                          <button onClick={() => handleApproveDeny(row.email, "deny")} disabled={approving === row.email} style={btnDanger(approving === row.email)}>Deny</button>
                         </>
                       )}
                       {(row.status === "pending_login" || row.status === "active") && (
-                        <button type="button" onClick={() => copyInviteLink(row.email)} style={{ ...btnSmall(false), marginRight: 8, background: copiedEmail === row.email ? COLORS.green600 : COLORS.green800 }}>
-                          {copiedEmail === row.email ? "Copied!" : "Copy link"}
-                        </button>
+                        <CopyLinkButton
+                          copied={copiedEmail === row.email}
+                          onClick={() => copyInviteLink(row.email)}
+                        />
                       )}
                       {row.status === "pending_login" && (
                         <button type="button" onClick={() => handleSendReminder(row.email)} disabled={reminding === row.email} style={{ ...btnOutline, minHeight: 32, padding: "8px 12px" }}>
                           {reminding === row.email ? "Sending..." : "Send reminder"}
                         </button>
                       )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1625,9 +1376,10 @@ export default function AnalyticsTable({
                           </button>
                         </td>
                         <td style={td}>
-                          <button type="button" onClick={() => copyInviteLink(a.email)} style={{ ...btnSmall(false), background: copiedEmail === a.email ? COLORS.green600 : COLORS.green800 }}>
-                            {copiedEmail === a.email ? "Copied!" : "Copy link"}
-                          </button>
+                          <CopyLinkButton
+                            copied={copiedEmail === a.email}
+                            onClick={() => copyInviteLink(a.email)}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -1683,9 +1435,10 @@ export default function AnalyticsTable({
                             </>
                           )}
                           {r.status === "approved" && (
-                            <button type="button" onClick={() => copyInviteLink(r.email)} style={{ ...btnSmall(false), background: copiedEmail === r.email ? COLORS.green600 : COLORS.green800 }}>
-                              {copiedEmail === r.email ? "Copied!" : "Copy link"}
-                            </button>
+                            <CopyLinkButton
+                              copied={copiedEmail === r.email}
+                              onClick={() => copyInviteLink(r.email)}
+                            />
                           )}
                         </td>
                       </tr>

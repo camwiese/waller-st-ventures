@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { COLORS, SANS } from "../../constants/theme";
+import { useAdminContext } from "./AdminContextProvider";
 
 const ALL_LINKS = [
   { href: "/pst", label: "Data Room" },
   { href: "/admin/content", label: "Edit Content", requiresContentEdit: true },
-  { href: "/admin", label: "Analytics" },
-  { href: "/admin/changelog", label: "Change Log", requiresContentEdit: true },
+  { href: "/admin", label: "Access" },
 ];
 
 function isActive(pathname, href) {
@@ -19,12 +19,15 @@ function isActive(pathname, href) {
 
 export default function AdminTopNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const adminContext = useAdminContext();
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.matchMedia("(max-width: 820px)").matches;
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [canEditContent, setCanEditContent] = useState(true); // default true, hide if partner without permission
+  const canEditContent =
+    adminContext?.isGP || adminContext?.partner?.can_edit_content || false;
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 820px)");
@@ -33,27 +36,16 @@ export default function AdminTopNav() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
-  // Fetch admin context to determine content edit access
-  useEffect(() => {
-    fetch("/api/admin/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && !data.error) {
-          // GP always can edit; partners need can_edit_content
-          setCanEditContent(data.isGP || data.partner?.can_edit_content || false);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
   const links = useMemo(
     () => ALL_LINKS.filter((link) => !link.requiresContentEdit || canEditContent),
     [canEditContent]
   );
+
+  useEffect(() => {
+    links.forEach((link) => {
+      router.prefetch(link.href);
+    });
+  }, [links, router]);
 
   const activeLabel = useMemo(() => {
     const active = links.find((link) => isActive(pathname || "", link.href));
@@ -130,7 +122,7 @@ export default function AdminTopNav() {
                         <Link
                           key={link.href}
                           href={link.href}
-                          prefetch={false}
+                          onClick={() => setMenuOpen(false)}
                           style={{
                             fontFamily: SANS,
                             fontSize: 14,
@@ -170,7 +162,6 @@ export default function AdminTopNav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  prefetch={false}
                   style={{
                     fontFamily: SANS,
                     fontSize: 13,

@@ -1,8 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-const ContentEditor = dynamic(() => import("./ContentEditor"), { ssr: false });
+import ContentEditor from "./ContentEditor";
 
 export default function ContentEditorClient(props) {
   return <ContentEditor {...props} />;
