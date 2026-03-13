@@ -14,7 +14,7 @@ const PDF_OPTIONS = {
   cMapPacked: true,
 };
 
-export default function DeckViewer({ isMobile, userEmail }) {
+export default function DeckViewer({ isMobile, userEmail, pdfUrl }) {
   const [numPages, setNumPages] = useState(null);
   const [error, setError] = useState(false);
   const pageWidth = isMobile ? Math.min(window.innerWidth - 40, 720) : 720;
@@ -42,7 +42,7 @@ export default function DeckViewer({ isMobile, userEmail }) {
 
   return (
     <Document
-      file="/api/deck"
+      file={pdfUrl || "/api/deck"}
       onLoadSuccess={onDocumentLoadSuccess}
       onLoadError={() => setError(true)}
       options={PDF_OPTIONS}

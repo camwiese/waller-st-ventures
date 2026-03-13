@@ -1,0 +1,244 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
+import { COLORS, SANS, SERIF } from "../constants/theme";
+import useVideoTracker from "../hooks/useVideoTracker";
+
+const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
+const DeckViewer = dynamic(() => import("./DeckViewer"), { ssr: false });
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
+export default function SharePageClient({ token }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const playerRef = useRef(null);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/share/${token}`)
+      .then((res) => {
+        if (res.status === 410) throw new Error("expired");
+        if (!res.ok) throw new Error("not_found");
+        return res.json();
+      })
+      .then((d) => { if (!cancelled) setData(d); })
+      .catch((err) => { if (!cancelled) setError(err.message); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [token]);
+
+  const isPodcast = data?.contentType === "podcast";
+
+  useVideoTracker({
+    endpointUrl: isPodcast ? `/api/share/${token}/track` : null,
+    totalDuration,
+    playerRef: isPodcast ? playerRef : { current: null },
+  });
+
+  // For deck, log a single view event on mount
+  useEffect(() => {
+    if (!data || data.contentType !== "deck") return;
+    fetch(`/api/share/${token}/track`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: null,
+        durationSeconds: 0,
+        maxPositionSeconds: 0,
+        totalDurationSeconds: 0,
+      }),
+    }).catch(() => {});
+  }, [data, token]);
+
+  const handleLoadedMetadata = useCallback((e) => {
+    const dur = e?.target?.duration || 0;
+    if (dur > 0) setTotalDuration(dur);
+  }, []);
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: COLORS.cream50 || "#fcfbf8",
+      display: "flex",
+      flexDirection: "column",
+    }}>
+      {/* Header */}
+      <header style={{
+        padding: isMobile ? "20px 20px 0" : "28px 40px 0",
+        textAlign: "center",
+      }}>
+        <div style={{
+          fontFamily: SERIF,
+          fontSize: isMobile ? 18 : 22,
+          fontWeight: 600,
+          color: COLORS.green900,
+          letterSpacing: "0.02em",
+        }}>
+          Waller Street Ventures
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: isMobile ? "24px 16px 32px" : "40px 40px 48px",
+      }}>
+        <div style={{
+          width: "100%",
+          maxWidth: 760,
+        }}>
+          {loading && (
+            <div style={{
+              width: "100%", aspectRatio: "16/9", background: COLORS.cream100, borderRadius: 8,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              border: `1px solid ${COLORS.border}`,
+            }}>
+              <div style={{ fontFamily: SANS, fontSize: 14, color: COLORS.text400 }}>Loading...</div>
+            </div>
+          )}
+
+          {error && (
+            <div style={{
+              textAlign: "center",
+              padding: isMobile ? "60px 20px" : "80px 40px",
+            }}>
+              <div style={{
+                fontFamily: SERIF,
+                fontSize: isMobile ? 22 : 28,
+                color: COLORS.green900,
+                marginBottom: 12,
+              }}>
+                {error === "expired" ? "This link is no longer available" : "Link not found"}
+              </div>
+              <div style={{
+                fontFamily: SANS,
+                fontSize: 15,
+                color: COLORS.text400,
+                lineHeight: 1.6,
+              }}>
+                {error === "expired"
+                  ? "This content has been removed by the sender."
+                  : "The link you followed may be invalid or expired."}
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && data && isPodcast && (
+            <>
+              <h1 style={{
+                fontFamily: SERIF,
+                fontSize: isMobile ? 24 : 32,
+                fontWeight: 600,
+                color: COLORS.green900,
+                margin: "0 0 8px 0",
+                textAlign: "center",
+              }}>
+                CEO Interview
+              </h1>
+              <p style={{
+                fontFamily: SANS,
+                fontSize: 15,
+                color: COLORS.text500,
+                textAlign: "center",
+                margin: "0 0 24px 0",
+                lineHeight: 1.6,
+              }}>
+                A conversation about PST&apos;s origin story, the cryopreservation breakthrough, and the path to first-in-human trials.
+              </p>
+
+              <div
+                style={{
+                  width: "100%", borderRadius: 8, overflow: "hidden",
+                  border: `1px solid ${COLORS.border}`, background: "#000",
+                }}
+                onContextMenu={(e) => e.preventDefault()}
+              >
+                <MuxPlayer
+                  ref={playerRef}
+                  playbackId={data.playbackId}
+                  tokens={{ playback: data.token }}
+                  streamType="on-demand"
+                  style={{ width: "100%", aspectRatio: "16/9", display: "block" }}
+                  onLoadedMetadata={handleLoadedMetadata}
+                />
+              </div>
+            </>
+          )}
+
+          {!loading && !error && data && data.contentType === "deck" && (
+            <>
+              <h1 style={{
+                fontFamily: SERIF,
+                fontSize: isMobile ? 24 : 32,
+                fontWeight: 600,
+                color: COLORS.green900,
+                margin: "0 0 24px 0",
+                textAlign: "center",
+              }}>
+                PST Deck
+              </h1>
+              <div onContextMenu={(e) => e.preventDefault()}>
+                <DeckViewer
+                  isMobile={isMobile}
+                  userEmail={data.email}
+                  pdfUrl={`/api/share/${token}/deck`}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer style={{
+        textAlign: "center",
+        padding: isMobile ? "24px 20px 32px" : "32px 40px 40px",
+        borderTop: `1px solid ${COLORS.border}`,
+      }}>
+        <div style={{
+          fontFamily: SERIF,
+          fontSize: isMobile ? 16 : 18,
+          color: COLORS.green900,
+          marginBottom: 8,
+        }}>
+          Want to learn more about PST?{" "}
+          <a
+            href="sms:3603184480"
+            style={{
+              color: COLORS.gold600,
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
+          >
+            Text Cam
+          </a>
+        </div>
+        <div style={{
+          fontFamily: SANS,
+          fontSize: 12,
+          color: COLORS.text400,
+          marginTop: 12,
+        }}>
+          &copy; 2026 Waller Street Ventures. Confidential.
+        </div>
+      </footer>
+    </div>
+  );
+}

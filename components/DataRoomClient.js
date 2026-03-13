@@ -221,7 +221,7 @@ function DataRoomClient({ cmsContent = {}, initialTab, isAdmin = false, userEmai
       case "model": return <ModelSection {...props} investAmount={investAmount} setInvestAmount={setInvestAmount} />;
       case "memo": return <MemoSection {...props} />;
       case "deck": return <DeckSection {...props} userEmail={userEmail} />;
-      case "interview": return <InterviewSection {...props} />;
+      case "interview": return <InterviewSection {...props} userEmail={userEmail} />;
       case "faq": return <FAQSection {...props} />;
       case "science": return <ScienceSection {...props} />;
       case "chat": return <CallSection isMobile={isMobile} contactSettings={contactSettings} sectionTitle={sectionTitle} />;
