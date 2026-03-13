@@ -14,12 +14,21 @@ const REQUIRED_VARS = [
   "RESEND_API_KEY",
   "NEXT_PUBLIC_APP_URL",
   "AUTH_SENDER_EMAIL",
-  "MUX_TOKEN_ID",
-  "MUX_TOKEN_SECRET",
-  "MUX_SIGNING_KEY_ID",
-  "MUX_SIGNING_KEY_PRIVATE",
-  "MUX_PLAYBACK_ID",
 ];
+
+function firstDefined(...values) {
+  return values.find((value) => typeof value === "string" && value.trim()) || "";
+}
+
+function getMuxConfig(env) {
+  return {
+    tokenId: firstDefined(env.MUX_TOKEN_ID, env.pst_interview_MUX_TOKEN_ID),
+    tokenSecret: firstDefined(env.MUX_TOKEN_SECRET, env.pst_interview_MUX_TOKEN_SECRET),
+    signingKeyId: firstDefined(env.MUX_SIGNING_KEY_ID, env.pst_interview_MUX_SIGNING_KEY_ID),
+    signingKeyPrivate: firstDefined(env.MUX_SIGNING_KEY_PRIVATE, env.pst_interview_MUX_SIGNING_KEY_PRIVATE),
+    playbackId: firstDefined(env.MUX_PLAYBACK_ID, env.pst_interview_MUX_PLAYBACK_ID),
+  };
+}
 
 function loadDotEnvFile(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -53,6 +62,13 @@ function loadDotEnvFile(filePath) {
 loadDotEnvFile(envPath);
 
 const missing = REQUIRED_VARS.filter((name) => !String(process.env[name] || "").trim());
+const muxConfig = getMuxConfig(process.env);
+
+if (!muxConfig.tokenId) missing.push("MUX_TOKEN_ID or pst_interview_MUX_TOKEN_ID");
+if (!muxConfig.tokenSecret) missing.push("MUX_TOKEN_SECRET or pst_interview_MUX_TOKEN_SECRET");
+if (!muxConfig.signingKeyId) missing.push("MUX_SIGNING_KEY_ID or pst_interview_MUX_SIGNING_KEY_ID");
+if (!muxConfig.signingKeyPrivate) missing.push("MUX_SIGNING_KEY_PRIVATE or pst_interview_MUX_SIGNING_KEY_PRIVATE");
+if (!muxConfig.playbackId) missing.push("MUX_PLAYBACK_ID or pst_interview_MUX_PLAYBACK_ID");
 
 if (missing.length > 0) {
   console.error("Missing required environment variables:");

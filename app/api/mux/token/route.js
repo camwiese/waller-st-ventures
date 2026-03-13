@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../../../lib/supabase/server";
-import Mux from "@mux/mux-node";
-
-const mux = new Mux({
-  tokenId: process.env.MUX_TOKEN_ID,
-  tokenSecret: process.env.MUX_TOKEN_SECRET,
-});
+import { createMuxClient, getMuxConfig } from "../../../../lib/muxConfig";
 
 export async function GET() {
   const supabase = await createClient();
@@ -17,15 +12,16 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const playbackId = process.env.MUX_PLAYBACK_ID;
-  if (!playbackId) {
+  const { playbackId, signingKeyId, signingKeyPrivate } = getMuxConfig();
+  if (!playbackId || !signingKeyId || !signingKeyPrivate) {
     return NextResponse.json({ error: "Video not configured" }, { status: 500 });
   }
 
   try {
+    const mux = createMuxClient();
     const token = mux.jwt.signPlaybackId(playbackId, {
-      keyId: process.env.MUX_SIGNING_KEY_ID,
-      keySecret: process.env.MUX_SIGNING_KEY_PRIVATE,
+      keyId: signingKeyId,
+      keySecret: signingKeyPrivate,
       expiration: "2h",
     });
 
