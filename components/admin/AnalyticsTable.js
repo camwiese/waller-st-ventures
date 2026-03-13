@@ -227,6 +227,41 @@ function CopyLinkButton({ copied, disabled = false, onClick }) {
   );
 }
 
+function ShareLinkButton({ type, copied, loading, onClick }) {
+  const isPodcast = type === "podcast";
+  const label = isPodcast ? "Copy podcast share link" : "Copy deck share link";
+  const copiedLabel = isPodcast ? "Podcast link copied" : "Deck link copied";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={loading}
+      aria-label={copied ? copiedLabel : label}
+      title={copied ? copiedLabel : label}
+      style={{
+        ...iconButtonBase,
+        color: copied ? COLORS.green800 : loading ? COLORS.text400 : COLORS.text500,
+        borderColor: copied ? COLORS.green300 : COLORS.border,
+        background: copied ? COLORS.green100 : COLORS.white,
+        cursor: loading ? "not-allowed" : "pointer",
+        opacity: loading ? 0.6 : 1,
+      }}
+    >
+      {isPodcast ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <path d="M8 21h8M12 17v4" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 function SummaryCard({ value, label }) {
   return (
     <div style={{ flex: 1, minWidth: 140, background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 3, padding: "18px 20px", textAlign: "center" }}>
@@ -277,6 +312,16 @@ function InvestorCard({ inv, isOpen, onToggle, onRevoke, revoking }) {
               <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text900, fontWeight: 600, width: 60, textAlign: "right", flexShrink: 0 }}>{tab.time}</span>
             </div>
           ))}
+          {inv.videoEngagement && (
+            <>
+              <div style={{ ...sectionLabel, marginTop: 16, marginBottom: 10 }}>Video engagement</div>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                <MetricPill label="Play time" value={inv.videoEngagement.totalPlayTime} />
+                <MetricPill label="Watched" value={`${inv.videoEngagement.percentWatched}%`} />
+                <MetricPill label="Sessions" value={inv.videoEngagement.sessions} />
+              </div>
+            </>
+          )}
           {inv.sessions.length > 0 && (
             <>
               <div style={{ ...sectionLabel, marginTop: 16, marginBottom: 10 }}>Visit timeline</div>
@@ -359,6 +404,25 @@ function InvestorRow({ inv, isOpen, onToggle, onRevoke, revoking }) {
                 </div>
               ))}
             </div>
+            {inv.videoEngagement && (
+              <>
+                <div style={{ ...sectionLabel, marginBottom: 12 }}>Video Engagement</div>
+                <div style={{ display: "flex", gap: 24, marginBottom: 24 }}>
+                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                    <span style={{ color: COLORS.text400 }}>Play time</span>{" "}
+                    <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.videoEngagement.totalPlayTime}</span>
+                  </span>
+                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                    <span style={{ color: COLORS.text400 }}>Watched</span>{" "}
+                    <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.videoEngagement.percentWatched}%</span>
+                  </span>
+                  <span style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text500 }}>
+                    <span style={{ color: COLORS.text400 }}>Sessions</span>{" "}
+                    <span style={{ fontWeight: 600, color: COLORS.text700 }}>{inv.videoEngagement.sessions}</span>
+                  </span>
+                </div>
+              </>
+            )}
             {inv.sessions.length > 0 && (
               <>
                 <div style={{ ...sectionLabel, marginBottom: 12 }}>Visit Timeline</div>
@@ -398,7 +462,7 @@ function InvestorRow({ inv, isOpen, onToggle, onRevoke, revoking }) {
 
 // --- Mobile Request Card ---
 
-function RequestCardMobile({ request, onApprove, onDeny, onCopyLink, approving, copiedEmail }) {
+function RequestCardMobile({ request, onApprove, onDeny, onCopyLink, approving, copiedEmail, onCopyShareLink, copiedShareEmail, generatingShareLink }) {
   return (
     <div style={cardStyle}>
       <div style={{ fontFamily: SANS, fontSize: 14, fontWeight: 600, color: COLORS.text900, wordBreak: "break-all", marginBottom: 8 }}>{request.email}</div>
@@ -417,11 +481,13 @@ function RequestCardMobile({ request, onApprove, onDeny, onCopyLink, approving, 
         </div>
       )}
       {request.status === "approved" && (
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
           <CopyLinkButton
             copied={copiedEmail === request.email}
             onClick={() => onCopyLink(request.email)}
           />
+          <ShareLinkButton type="podcast" copied={copiedShareEmail === `podcast:${request.email}`} loading={generatingShareLink === `podcast:${request.email}`} onClick={() => onCopyShareLink(request.email, "podcast")} />
+          <ShareLinkButton type="deck" copied={copiedShareEmail === `deck:${request.email}`} loading={generatingShareLink === `deck:${request.email}`} onClick={() => onCopyShareLink(request.email, "deck")} />
         </div>
       )}
     </div>
@@ -430,7 +496,7 @@ function RequestCardMobile({ request, onApprove, onDeny, onCopyLink, approving, 
 
 // --- Mobile Invite Card ---
 
-function InviteCardMobile({ item, onCopyLink, copiedEmail, onToggleNda, togglingNda }) {
+function InviteCardMobile({ item, onCopyLink, copiedEmail, onToggleNda, togglingNda, onCopyShareLink, copiedShareEmail, generatingShareLink }) {
   return (
     <div style={cardStyle}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
@@ -445,6 +511,8 @@ function InviteCardMobile({ item, onCopyLink, copiedEmail, onToggleNda, toggling
           copied={copiedEmail === item.email}
           onClick={() => onCopyLink(item.email)}
         />
+        <ShareLinkButton type="podcast" copied={copiedShareEmail === `podcast:${item.email}`} loading={generatingShareLink === `podcast:${item.email}`} onClick={() => onCopyShareLink(item.email, "podcast")} />
+        <ShareLinkButton type="deck" copied={copiedShareEmail === `deck:${item.email}`} loading={generatingShareLink === `deck:${item.email}`} onClick={() => onCopyShareLink(item.email, "deck")} />
         <button
           type="button"
           onClick={() => onToggleNda(item.email, item.nda_required === false)}
@@ -521,6 +589,11 @@ export default function AnalyticsTable({
   const [ndaAuditLog, setNdaAuditLog] = useState([]);
   const [ndaAuditLoaded, setNdaAuditLoaded] = useState(false);
   const [ndaAuditLoading, setNdaAuditLoading] = useState(false);
+  const [generatingShareLink, setGeneratingShareLink] = useState(null);
+  const [copiedShareEmail, setCopiedShareEmail] = useState(null);
+  const [shareTokens, setShareTokens] = useState([]);
+  const [shareTokensLoaded, setShareTokensLoaded] = useState(false);
+  const [togglingShareToken, setTogglingShareToken] = useState(null);
 
   const toggle = (email) => setExpanded(prev => ({ ...prev, [email]: !prev[email] }));
 
@@ -557,7 +630,10 @@ export default function AnalyticsTable({
     if ((view === "access" || view === "settings") && !accessDataLoaded) {
       fetchAccessSnapshot();
     }
-  }, [view, accessDataLoaded, fetchAccessSnapshot]);
+    if (view === "access" && !shareTokensLoaded) {
+      fetchShareTokens();
+    }
+  }, [view, accessDataLoaded, fetchAccessSnapshot, shareTokensLoaded]);
 
   const fetchPartners = useCallback(async () => {
     try {
@@ -895,6 +971,66 @@ export default function AnalyticsTable({
       setTimeout(() => setCopiedEmail(null), 3000);
       toast.success("Link copied to clipboard");
     });
+  };
+
+  const handleCopyShareLink = async (email, contentType) => {
+    const key = `${contentType}:${email}`;
+    setGeneratingShareLink(key);
+    try {
+      const res = await fetch("/api/admin/share-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, contentType }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Failed to generate share link");
+        return;
+      }
+      await navigator.clipboard.writeText(data.url);
+      setCopiedShareEmail(key);
+      setTimeout(() => setCopiedShareEmail(null), 3000);
+      toast.success(data.isExisting ? `${contentType === "podcast" ? "Podcast" : "Deck"} link copied` : `New ${contentType} link created and copied`);
+      // Refresh share tokens if loaded
+      if (shareTokensLoaded) fetchShareTokens();
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setGeneratingShareLink(null);
+    }
+  };
+
+  const fetchShareTokens = async () => {
+    try {
+      const res = await fetch("/api/admin/share-token");
+      const data = await res.json();
+      if (res.ok) {
+        setShareTokens(data.shareTokens || []);
+        setShareTokensLoaded(true);
+      }
+    } catch {}
+  };
+
+  const handleToggleShareToken = async (tokenStr, newActive) => {
+    setTogglingShareToken(tokenStr);
+    try {
+      const res = await fetch(`/api/admin/share-token/${tokenStr}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_active: newActive }),
+      });
+      if (res.ok) {
+        setShareTokens((prev) =>
+          prev.map((t) => t.token === tokenStr ? { ...t, is_active: newActive } : t)
+        );
+        toast.success(newActive ? "Link reactivated" : "Link deactivated");
+      } else {
+        toast.error("Failed to update link");
+      }
+    } catch {
+      toast.error("Network error");
+    }
+    setTogglingShareToken(null);
   };
 
   const handleSendReminder = async (email) => {
@@ -1264,10 +1400,24 @@ export default function AnalyticsTable({
                         </>
                       )}
                       {(row.status === "pending_login" || row.status === "active") && (
-                        <CopyLinkButton
-                          copied={copiedEmail === row.email}
-                          onClick={() => copyInviteLink(row.email)}
-                        />
+                        <>
+                          <CopyLinkButton
+                            copied={copiedEmail === row.email}
+                            onClick={() => copyInviteLink(row.email)}
+                          />
+                          <ShareLinkButton
+                            type="podcast"
+                            copied={copiedShareEmail === `podcast:${row.email}`}
+                            loading={generatingShareLink === `podcast:${row.email}`}
+                            onClick={() => handleCopyShareLink(row.email, "podcast")}
+                          />
+                          <ShareLinkButton
+                            type="deck"
+                            copied={copiedShareEmail === `deck:${row.email}`}
+                            loading={generatingShareLink === `deck:${row.email}`}
+                            onClick={() => handleCopyShareLink(row.email, "deck")}
+                          />
+                        </>
                       )}
                       {row.status === "pending_login" && (
                         <button type="button" onClick={() => handleSendReminder(row.email)} disabled={reminding === row.email} style={{ ...btnOutline, minHeight: 32, padding: "8px 12px" }}>
@@ -1281,6 +1431,95 @@ export default function AnalyticsTable({
               </tbody>
             </table>
             {pendingAccessRows.length === 0 && <EmptyState title="No access rows yet" description="Invite someone above to get started." />}
+
+            {/* ========== SHARE LINKS SECTION ========== */}
+            <div style={{ borderTop: `1px solid ${COLORS.border}`, padding: isMobile ? 12 : 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <div style={sectionLabel}>Share Links</div>
+                {!shareTokensLoaded && (
+                  <button type="button" onClick={fetchShareTokens} style={{ ...btnOutline, minHeight: 32, padding: "6px 12px", fontSize: 12 }}>
+                    Load share links
+                  </button>
+                )}
+              </div>
+              {shareTokensLoaded && shareTokens.length === 0 && (
+                <div style={{ fontFamily: SANS, fontSize: 13, color: COLORS.text400, padding: "8px 0" }}>
+                  No share links generated yet. Click the headphone or monitor icon next to any user above to create one.
+                </div>
+              )}
+              {shareTokensLoaded && shareTokens.length > 0 && (
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: COLORS.cream100 }}>
+                      <th style={th}>Email</th>
+                      <th style={th}>Type</th>
+                      <th style={th}>Status</th>
+                      <th style={{ ...th, textAlign: "right" }}>Views</th>
+                      <th style={{ ...th, textAlign: "right" }}>Last Viewed</th>
+                      <th style={{ ...th, width: 180 }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shareTokens.map((st) => (
+                      <tr key={st.id}>
+                        <td style={td}><span style={{ fontWeight: 600, color: COLORS.text900, fontSize: 13 }}>{st.email}</span></td>
+                        <td style={td}>
+                          <span style={{
+                            display: "inline-flex", padding: "3px 8px", borderRadius: 10,
+                            fontWeight: 600, fontSize: 11, background: COLORS.gray100, color: COLORS.text700,
+                          }}>
+                            {st.content_type}
+                          </span>
+                        </td>
+                        <td style={td}>
+                          <span style={{
+                            display: "inline-flex", padding: "3px 8px", borderRadius: 10,
+                            fontWeight: 600, fontSize: 11,
+                            background: st.is_active ? COLORS.green100 : COLORS.gray100,
+                            color: st.is_active ? COLORS.green800 : COLORS.text400,
+                          }}>
+                            {st.is_active ? "Active" : "Disabled"}
+                          </span>
+                        </td>
+                        <td style={{ ...td, textAlign: "right" }}>{st.view_count}</td>
+                        <td style={{ ...td, textAlign: "right", fontSize: 13, color: COLORS.text500 }}>
+                          {st.last_viewed_at ? formatRequestDate(st.last_viewed_at) : "\u2014"}
+                        </td>
+                        <td style={td}>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                            <CopyLinkButton
+                              copied={copiedShareEmail === `copy:${st.token}`}
+                              onClick={() => {
+                                const baseUrl = typeof window !== "undefined" ? (process.env.NEXT_PUBLIC_APP_URL || window.location.origin) : "";
+                                navigator.clipboard.writeText(`${baseUrl}/share/${st.token}`).then(() => {
+                                  setCopiedShareEmail(`copy:${st.token}`);
+                                  setTimeout(() => setCopiedShareEmail(null), 3000);
+                                  toast.success("Share link copied");
+                                });
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleToggleShareToken(st.token, !st.is_active)}
+                              disabled={togglingShareToken === st.token}
+                              style={{
+                                ...btnBase, fontSize: 11, padding: "5px 10px", minHeight: 32,
+                                color: st.is_active ? COLORS.error : COLORS.green800,
+                                background: "transparent",
+                                border: `1px solid ${st.is_active ? COLORS.error : COLORS.green800}`,
+                                opacity: togglingShareToken === st.token ? 0.6 : 1,
+                              }}
+                            >
+                              {st.is_active ? "Deactivate" : "Reactivate"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
         )}
 
@@ -1336,7 +1575,7 @@ export default function AnalyticsTable({
                 {allowedEmailsState.length === 0 ? (
                   <EmptyState title="No invites yet" description="Add an email above to send an invite." />
                 ) : allowedEmailsState.map(a => (
-                  <InviteCardMobile key={a.id} item={a} onCopyLink={copyInviteLink} copiedEmail={copiedEmail} onToggleNda={handleToggleNda} togglingNda={togglingNda} />
+                  <InviteCardMobile key={a.id} item={a} onCopyLink={copyInviteLink} copiedEmail={copiedEmail} onToggleNda={handleToggleNda} togglingNda={togglingNda} onCopyShareLink={handleCopyShareLink} copiedShareEmail={copiedShareEmail} generatingShareLink={generatingShareLink} />
                 ))}
               </div>
             ) : (
@@ -1376,10 +1615,14 @@ export default function AnalyticsTable({
                           </button>
                         </td>
                         <td style={td}>
-                          <CopyLinkButton
-                            copied={copiedEmail === a.email}
-                            onClick={() => copyInviteLink(a.email)}
-                          />
+                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                            <CopyLinkButton
+                              copied={copiedEmail === a.email}
+                              onClick={() => copyInviteLink(a.email)}
+                            />
+                            <ShareLinkButton type="podcast" copied={copiedShareEmail === `podcast:${a.email}`} loading={generatingShareLink === `podcast:${a.email}`} onClick={() => handleCopyShareLink(a.email, "podcast")} />
+                            <ShareLinkButton type="deck" copied={copiedShareEmail === `deck:${a.email}`} loading={generatingShareLink === `deck:${a.email}`} onClick={() => handleCopyShareLink(a.email, "deck")} />
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1407,6 +1650,9 @@ export default function AnalyticsTable({
                     onCopyLink={copyInviteLink}
                     approving={approving}
                     copiedEmail={copiedEmail}
+                    onCopyShareLink={handleCopyShareLink}
+                    copiedShareEmail={copiedShareEmail}
+                    generatingShareLink={generatingShareLink}
                   />
                 ))}
               </div>
@@ -1435,10 +1681,14 @@ export default function AnalyticsTable({
                             </>
                           )}
                           {r.status === "approved" && (
-                            <CopyLinkButton
-                              copied={copiedEmail === r.email}
-                              onClick={() => copyInviteLink(r.email)}
-                            />
+                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                              <CopyLinkButton
+                                copied={copiedEmail === r.email}
+                                onClick={() => copyInviteLink(r.email)}
+                              />
+                              <ShareLinkButton type="podcast" copied={copiedShareEmail === `podcast:${r.email}`} loading={generatingShareLink === `podcast:${r.email}`} onClick={() => handleCopyShareLink(r.email, "podcast")} />
+                              <ShareLinkButton type="deck" copied={copiedShareEmail === `deck:${r.email}`} loading={generatingShareLink === `deck:${r.email}`} onClick={() => handleCopyShareLink(r.email, "deck")} />
+                            </div>
                           )}
                         </td>
                       </tr>

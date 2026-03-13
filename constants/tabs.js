@@ -7,7 +7,7 @@ export const TAB_WEIGHTS = {
   deck: 2,
   faq: 1.5,
   overview: 1,
-  interview: 1,
+  interview: 2,
   science: 1,
   chat: 1,
 };
