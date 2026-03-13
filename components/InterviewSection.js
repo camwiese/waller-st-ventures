@@ -25,7 +25,6 @@ const PLAYER_STYLE = {
   height: "100%",
   display: "block",
   background: "#000",
-  "--controls": "bottom",
 };
 
 export default function InterviewSection({ isMobile, content, sectionTitle }) {
