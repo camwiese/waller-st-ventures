@@ -9,6 +9,24 @@ import useVideoTracker from "../hooks/useVideoTracker";
 
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
 const MOBILE_PLAYBACK_RATES = "0.75 1 1.25 1.5 2";
+const PLAYER_FRAME_STYLE = {
+  position: "relative",
+  width: "100%",
+  paddingTop: "56.25%",
+  borderRadius: 8,
+  overflow: "hidden",
+  border: `1px solid ${COLORS.border}`,
+  background: "#000",
+};
+const PLAYER_STYLE = {
+  position: "absolute",
+  inset: 0,
+  width: "100%",
+  height: "100%",
+  display: "block",
+  background: "#000",
+  "--controls": "bottom",
+};
 
 export default function InterviewSection({ isMobile, content, sectionTitle }) {
   const hasCmsBody = typeof content?.body === "string" && content.body.trim().length > 0;
@@ -82,14 +100,7 @@ export default function InterviewSection({ isMobile, content, sectionTitle }) {
 
         {!loading && !error && muxData && (
           <div
-            style={{
-              width: "100%",
-              aspectRatio: "16 / 9",
-              borderRadius: 8,
-              overflow: "hidden",
-              border: `1px solid ${COLORS.border}`,
-              background: "#000",
-            }}
+            style={PLAYER_FRAME_STYLE}
             onContextMenu={(e) => e.preventDefault()}
           >
             <MuxPlayer
@@ -98,7 +109,7 @@ export default function InterviewSection({ isMobile, content, sectionTitle }) {
               tokens={{ playback: muxData.token }}
               streamType="on-demand"
               playbackRates={isMobile ? MOBILE_PLAYBACK_RATES : undefined}
-              style={{ width: "100%", height: "100%", display: "block", "--controls": "bottom" }}
+              style={PLAYER_STYLE}
               onLoadedMetadata={handleLoadedMetadata}
             />
           </div>
