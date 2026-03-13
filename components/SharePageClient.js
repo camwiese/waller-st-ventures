@@ -76,19 +76,55 @@ export default function SharePageClient({ token }) {
       display: "flex",
       flexDirection: "column",
     }}>
-      {/* Header */}
       <header style={{
-        padding: isMobile ? "20px 20px 0" : "28px 40px 0",
-        textAlign: "center",
+        background: COLORS.green900,
+        borderBottom: `1px solid rgba(252, 251, 248, 0.14)`,
       }}>
         <div style={{
-          fontFamily: SERIF,
-          fontSize: isMobile ? 18 : 22,
-          fontWeight: 600,
-          color: COLORS.green900,
-          letterSpacing: "0.02em",
+          height: 6,
+          background: COLORS.gold600,
+        }} />
+        <div style={{
+          maxWidth: 1120,
+          margin: "0 auto",
+          padding: isMobile ? "16px 16px" : "18px 28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
         }}>
-          Waller Street Ventures
+          <div style={{
+            fontFamily: SERIF,
+            fontSize: isMobile ? 18 : 24,
+            fontWeight: 600,
+            color: COLORS.white,
+            letterSpacing: "0.03em",
+            textTransform: "uppercase",
+            lineHeight: 1,
+          }}>
+            Waller Street Ventures
+          </div>
+          <a
+            href="sms:3603184480"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: 38,
+              padding: isMobile ? "0 14px" : "0 16px",
+              borderRadius: 999,
+              border: `1px solid rgba(252, 251, 248, 0.22)`,
+              background: "rgba(252, 251, 248, 0.08)",
+              color: COLORS.white,
+              textDecoration: "none",
+              fontFamily: SANS,
+              fontSize: 13,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Text Cam
+          </a>
         </div>
       </header>
 
@@ -98,7 +134,7 @@ export default function SharePageClient({ token }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: isMobile ? "24px 16px 32px" : "40px 40px 48px",
+        padding: isMobile ? "24px 16px 32px" : "32px 40px 48px",
       }}>
         <div style={{
           width: "100%",
@@ -213,28 +249,9 @@ export default function SharePageClient({ token }) {
         borderTop: `1px solid ${COLORS.border}`,
       }}>
         <div style={{
-          fontFamily: SERIF,
-          fontSize: isMobile ? 16 : 18,
-          color: COLORS.green900,
-          marginBottom: 8,
-        }}>
-          Want to learn more about PST?{" "}
-          <a
-            href="sms:3603184480"
-            style={{
-              color: COLORS.gold600,
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
-          >
-            Text Cam
-          </a>
-        </div>
-        <div style={{
           fontFamily: SANS,
           fontSize: 12,
           color: COLORS.text400,
-          marginTop: 12,
         }}>
           &copy; 2026 Waller Street Ventures. Confidential.
         </div>
