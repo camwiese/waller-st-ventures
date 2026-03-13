@@ -7,7 +7,7 @@ import useVideoTracker from "../hooks/useVideoTracker";
 
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
 const DeckViewer = dynamic(() => import("./DeckViewer"), { ssr: false });
-const MOBILE_PLAYBACK_RATES = "0.75 1 1.25 1.5 2";
+const MOBILE_PLAYBACK_RATES = [0.75, 1, 1.25, 1.5, 2];
 const PLAYER_FRAME_STYLE = {
   position: "relative",
   width: "100%",
