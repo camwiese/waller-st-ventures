@@ -27,17 +27,13 @@ const PLAYER_STYLE = {
   background: "#000",
   "--media-primary-color": COLORS.white,
   "--media-accent-color": COLORS.green600,
-  "--media-secondary-color": "rgba(255, 255, 255, 0.72)",
+  "--media-secondary-color": "transparent",
 };
 const PLAYER_CHROME_STYLE = {
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
   borderRadius: 3,
   overflow: "hidden",
-};
-const PLAYER_CHROME_BAR_STYLE = {
-  height: 4,
-  background: COLORS.green600,
 };
 const DEFAULT_SUMMARY =
   "In this conversation, Daniel and I discuss PST's origin story, the cryopreservation breakthrough, what the first-in-human trial will look like, and why they believe this therapy can reach millions of patients worldwide.";
@@ -118,7 +114,6 @@ export default function InterviewSection({ isMobile, content, sectionTitle }) {
 
         {!loading && !error && muxData && (
           <div style={PLAYER_CHROME_STYLE}>
-            <div style={PLAYER_CHROME_BAR_STYLE} />
             <div style={{ padding: isMobile ? 12 : 16 }}>
               <div
                 style={PLAYER_FRAME_STYLE}

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "../../../../lib/supabase/server";
 import { createMuxClient, getMuxConfig } from "../../../../lib/muxConfig";
+import { notifyShareLinkView } from "../../../../lib/notifications";
+import { getNotificationRecipientsForInvestor } from "../../../../lib/adminAuth";
 
 export async function GET(request, { params }) {
   const { token } = await params;
@@ -39,6 +41,11 @@ export async function GET(request, { params }) {
     console.error("[share/token] Failed to update view count:", updateError.message);
   }
 
+  // Fire-and-forget email notification (deduped via share_view_notifications)
+  runShareViewNotification(shareToken.email, shareToken.content_type, serviceClient).catch((err) => {
+    console.error("[share/token] Notification error:", err?.message || err);
+  });
+
   // For podcast: generate Mux playback token
   if (shareToken.content_type === "podcast") {
     const { playbackId, signingKeyId, signingKeyPrivate } = getMuxConfig();
@@ -71,4 +78,20 @@ export async function GET(request, { params }) {
     contentType: "deck",
     email: shareToken.email,
   });
+}
+
+async function runShareViewNotification(email, contentType, serviceClient) {
+  const { data: upserted, error } = await serviceClient
+    .from("share_view_notifications")
+    .upsert(
+      { user_email: email, content_type: contentType, deal_slug: "pst" },
+      { onConflict: "user_email,content_type,deal_slug", ignoreDuplicates: true }
+    )
+    .select("id");
+
+  if (error) throw error;
+  if (!Array.isArray(upserted) || upserted.length === 0) return;
+
+  const recipients = await getNotificationRecipientsForInvestor(email, serviceClient);
+  await notifyShareLinkView(email, contentType, recipients);
 }

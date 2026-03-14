@@ -27,17 +27,13 @@ const PLAYER_STYLE = {
   background: "#000",
   "--media-primary-color": COLORS.white,
   "--media-accent-color": COLORS.green600,
-  "--media-secondary-color": "rgba(255, 255, 255, 0.72)",
+  "--media-secondary-color": "transparent",
 };
 const PLAYER_CHROME_STYLE = {
   background: COLORS.white,
   border: `1px solid ${COLORS.border}`,
   borderRadius: 3,
   overflow: "hidden",
-};
-const PLAYER_CHROME_BAR_STYLE = {
-  height: 4,
-  background: COLORS.green600,
 };
 const PLAYER_CHROME_INNER_STYLE = {
   padding: 16,
@@ -46,23 +42,16 @@ const CTA_STYLE = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: 10,
   borderRadius: 3,
-  background: COLORS.gold500,
-  color: COLORS.white,
+  background: "transparent",
+  color: COLORS.green200,
+  border: "1px solid rgba(240, 237, 230, 0.25)",
   textDecoration: "none",
   fontFamily: SANS,
-  fontSize: 14,
+  fontSize: 13,
   fontWeight: 600,
   lineHeight: 1.25,
   textAlign: "center",
-  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
-};
-const CTA_DOTS_STYLE = {
-  fontSize: 10,
-  letterSpacing: "0.18em",
-  opacity: 0.88,
-  transform: "translateY(-1px)",
 };
 const PODCAST_SUMMARY =
   "A conversation about PST's origin story, the cryopreservation breakthrough, and the path to first-in-human trials.";
@@ -140,10 +129,6 @@ export default function SharePageClient({ token }) {
         borderBottom: `1px solid rgba(252, 251, 248, 0.14)`,
       }}>
         <div style={{
-          height: 6,
-          background: COLORS.gold600,
-        }} />
-        <div style={{
           maxWidth: 1120,
           margin: "0 auto",
           padding: isMobile ? "16px 16px" : "18px 28px",
@@ -167,13 +152,10 @@ export default function SharePageClient({ token }) {
             href="sms:3603184480"
             style={{
               ...CTA_STYLE,
-              minHeight: isMobile ? 42 : 44,
-              padding: isMobile ? "10px 12px" : "12px 18px",
-              maxWidth: isMobile ? 188 : "none",
+              padding: "13px 16px",
             }}
           >
-            <span aria-hidden="true" style={CTA_DOTS_STYLE}>•••</span>
-            <span>Schedule a call. Just text me.</span>
+            Schedule a Call
           </a>
         </div>
       </header>
@@ -239,7 +221,6 @@ export default function SharePageClient({ token }) {
               </div>
 
               <div style={PLAYER_CHROME_STYLE}>
-                <div style={PLAYER_CHROME_BAR_STYLE} />
                 <div style={{ ...PLAYER_CHROME_INNER_STYLE, padding: isMobile ? 12 : 16 }}>
                   <div
                     style={PLAYER_FRAME_STYLE}
@@ -265,15 +246,10 @@ export default function SharePageClient({ token }) {
 
           {!loading && !error && data && data.contentType === "deck" && (
             <>
-              <h1 style={{
-                fontFamily: SERIF,
-                fontSize: isMobile ? 24 : 32,
-                fontWeight: 600,
-                color: COLORS.green900,
-                margin: "0 0 24px 0",
-              }}>
-                PST Deck
-              </h1>
+              <SectionHeader
+                title="PST Deck"
+                isMobile={isMobile}
+              />
               <div onContextMenu={(e) => e.preventDefault()}>
                 <DeckViewer
                   isMobile={isMobile}
