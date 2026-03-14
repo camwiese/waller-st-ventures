@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { COLORS, SERIF } from "../../../constants/theme";
+import { ROUTES } from "../../../lib/routes";
 
 function VerifyContent() {
   const searchParams = useSearchParams();
@@ -31,7 +32,7 @@ function VerifyContent() {
     }
 
     if (!tokenHash) {
-      window.location.replace("/pst");
+      window.location.replace(ROUTES.ROOT);
       return;
     }
 
@@ -98,7 +99,7 @@ function VerifyContent() {
       fetch("/api/auth/log-login", { method: "POST", keepalive: true }).catch(() => {});
 
       // Full page redirect so cookies from verify-otp response are sent on next request
-      window.location.replace("/pst");
+      window.location.replace(ROUTES.ROOT);
     } catch {
       setCodeError("Network error — please check your connection and try again.");
       setCodeStatus("sent");
@@ -139,7 +140,7 @@ function VerifyContent() {
         {!showCodeForm ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <Link
-              href="/pst"
+              href={ROUTES.ROOT}
               style={{
                 display: "block",
                 textAlign: "center",

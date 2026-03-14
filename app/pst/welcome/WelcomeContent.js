@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { COLORS, SERIF, SANS } from "../../../constants/theme";
 import NdaAgreement, { getNdaFullText } from "../../../components/NdaAgreement";
+import { ROUTES } from "../../../lib/routes";
 
 export default function WelcomeContent() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function WelcomeContent() {
         setLoading(false);
         return;
       }
-      router.push("/pst");
+      router.push(ROUTES.ROOT);
     } catch {
       setError("Network error. Please check your connection and try again.");
       setLoading(false);

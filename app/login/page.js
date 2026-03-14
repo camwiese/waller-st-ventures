@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 import { COLORS, SERIF } from "../../constants/theme";
+import { ROUTES } from "../../lib/routes";
 
 const MAX_RESENDS = 3;
 const COOLDOWN_SECONDS = 60;
@@ -240,7 +241,7 @@ function LoginForm() {
       }
 
       fetch("/api/auth/log-login", { method: "POST", keepalive: true }).catch(() => {});
-      router.push("/pst");
+      router.push(ROUTES.ROOT);
     } catch {
       setError("Network error — please check your connection and try again.");
       setLoading(false);

@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { updateSession } from "./lib/supabase/middleware";
 
-export function middleware() {
-  return NextResponse.next();
+export async function middleware(request) {
+  return await updateSession(request);
 }
 
 export const config = {
-  matcher: ["/pst/:path*", "/admin/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

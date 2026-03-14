@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { COLORS, SANS } from "../../constants/theme";
+import { ROUTES } from "../../lib/routes";
 import { useAdminContext } from "./AdminContextProvider";
 
 const ALL_LINKS = [
-  { href: "/pst", label: "Data Room" },
+  { href: ROUTES.ROOT, label: "Data Room" },
   { href: "/admin/content", label: "Edit Content", requiresContentEdit: true },
   { href: "/admin", label: "Access" },
 ];
