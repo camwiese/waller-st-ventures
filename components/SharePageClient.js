@@ -146,7 +146,7 @@ export default function SharePageClient({ token }) {
             textTransform: "uppercase",
             lineHeight: 1,
           }}>
-            Waller Street Ventures
+            CW Ventures
           </div>
           <a
             href="sms:3603184480"
@@ -279,7 +279,7 @@ export default function SharePageClient({ token }) {
             color: COLORS.text400,
             textAlign: "right",
           }}>
-            &copy; 2026 Waller Street Ventures. Confidential.
+            &copy; 2026 CW Ventures. Confidential.
           </div>
         </div>
       </footer>
