@@ -90,7 +90,7 @@ export default function InterviewSection({ isMobile, content, sectionTitle }) {
             </p>
           )}
         </div>
-        {hasCmsBody ? <RichTextRenderer html={content.body} style={{ marginBottom: 24 }} /> : null}
+        {hasCmsBody && content.body !== content.summary ? <RichTextRenderer html={content.body} style={{ marginBottom: 24 }} /> : null}
 
         {loading && (
           <div style={{
