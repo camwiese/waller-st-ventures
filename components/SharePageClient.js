@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { COLORS, SANS, SERIF } from "../constants/theme";
 import useVideoTracker from "../hooks/useVideoTracker";
+import { SectionHeader, bodyP } from "./Shared";
 
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false });
 const DeckViewer = dynamic(() => import("./DeckViewer"), { ssr: false });
@@ -24,7 +25,47 @@ const PLAYER_STYLE = {
   height: "100%",
   display: "block",
   background: "#000",
+  "--media-primary-color": COLORS.white,
+  "--media-accent-color": COLORS.green600,
+  "--media-secondary-color": "rgba(255, 255, 255, 0.72)",
 };
+const PLAYER_CHROME_STYLE = {
+  background: COLORS.white,
+  border: `1px solid ${COLORS.border}`,
+  borderRadius: 3,
+  overflow: "hidden",
+};
+const PLAYER_CHROME_BAR_STYLE = {
+  height: 4,
+  background: COLORS.green600,
+};
+const PLAYER_CHROME_INNER_STYLE = {
+  padding: 16,
+};
+const CTA_STYLE = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 10,
+  borderRadius: 3,
+  background: COLORS.gold500,
+  color: COLORS.white,
+  textDecoration: "none",
+  fontFamily: SANS,
+  fontSize: 14,
+  fontWeight: 600,
+  lineHeight: 1.25,
+  textAlign: "center",
+  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
+};
+const CTA_DOTS_STYLE = {
+  fontSize: 10,
+  letterSpacing: "0.18em",
+  opacity: 0.88,
+  transform: "translateY(-1px)",
+};
+const PODCAST_SUMMARY =
+  "A conversation about PST's origin story, the cryopreservation breakthrough, and the path to first-in-human trials.";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -125,23 +166,14 @@ export default function SharePageClient({ token }) {
           <a
             href="sms:3603184480"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              minHeight: 38,
-              padding: isMobile ? "0 14px" : "0 16px",
-              borderRadius: 999,
-              border: `1px solid rgba(252, 251, 248, 0.22)`,
-              background: "rgba(252, 251, 248, 0.08)",
-              color: COLORS.white,
-              textDecoration: "none",
-              fontFamily: SANS,
-              fontSize: 13,
-              fontWeight: 600,
-              whiteSpace: "nowrap",
+              ...CTA_STYLE,
+              minHeight: isMobile ? 42 : 44,
+              padding: isMobile ? "10px 12px" : "12px 18px",
+              maxWidth: isMobile ? 188 : "none",
             }}
           >
-            Text Cam
+            <span aria-hidden="true" style={CTA_DOTS_STYLE}>•••</span>
+            <span>Schedule a call. Just text me.</span>
           </a>
         </div>
       </header>
@@ -196,38 +228,37 @@ export default function SharePageClient({ token }) {
 
           {!loading && !error && data && isPodcast && (
             <>
-              <h1 style={{
-                fontFamily: SERIF,
-                fontSize: isMobile ? 24 : 32,
-                fontWeight: 600,
-                color: COLORS.green900,
-                margin: "0 0 8px 0",
-              }}>
-                CEO Interview
-              </h1>
-              <p style={{
-                fontFamily: SANS,
-                fontSize: 15,
-                color: COLORS.text500,
-                margin: "0 0 24px 0",
-                lineHeight: 1.6,
-              }}>
-                A conversation about PST&apos;s origin story, the cryopreservation breakthrough, and the path to first-in-human trials.
-              </p>
+              <SectionHeader
+                title="CEO Interview"
+                isMobile={isMobile}
+              />
+              <div style={{ borderLeft: `4px solid ${COLORS.green600}`, paddingLeft: 16, marginBottom: 24 }}>
+                <p style={{ ...bodyP, marginBottom: 0 }}>
+                  {PODCAST_SUMMARY}
+                </p>
+              </div>
 
-              <div
-                style={PLAYER_FRAME_STYLE}
-                onContextMenu={(e) => e.preventDefault()}
-              >
-                <MuxPlayer
-                  ref={playerRef}
-                  playbackId={data.playbackId}
-                  tokens={{ playback: data.token }}
-                  streamType="on-demand"
-                  playbackRates={isMobile ? MOBILE_PLAYBACK_RATES : undefined}
-                  style={PLAYER_STYLE}
-                  onLoadedMetadata={handleLoadedMetadata}
-                />
+              <div style={PLAYER_CHROME_STYLE}>
+                <div style={PLAYER_CHROME_BAR_STYLE} />
+                <div style={{ ...PLAYER_CHROME_INNER_STYLE, padding: isMobile ? 12 : 16 }}>
+                  <div
+                    style={PLAYER_FRAME_STYLE}
+                    onContextMenu={(e) => e.preventDefault()}
+                  >
+                    <MuxPlayer
+                      ref={playerRef}
+                      playbackId={data.playbackId}
+                      tokens={{ playback: data.token }}
+                      streamType="on-demand"
+                      playbackRates={isMobile ? MOBILE_PLAYBACK_RATES : undefined}
+                      primaryColor={COLORS.white}
+                      accentColor={COLORS.green600}
+                      disablePictureInPicture
+                      style={PLAYER_STYLE}
+                      onLoadedMetadata={handleLoadedMetadata}
+                    />
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -261,11 +292,19 @@ export default function SharePageClient({ token }) {
         borderTop: `1px solid ${COLORS.border}`,
       }}>
         <div style={{
-          fontFamily: SANS,
-          fontSize: 12,
-          color: COLORS.text400,
+          maxWidth: 1120,
+          margin: "0 auto",
+          display: "flex",
+          justifyContent: "flex-end",
         }}>
-          &copy; 2026 Waller Street Ventures. Confidential.
+          <div style={{
+            fontFamily: SANS,
+            fontSize: 12,
+            color: COLORS.text400,
+            textAlign: "right",
+          }}>
+            &copy; 2026 Waller Street Ventures. Confidential.
+          </div>
         </div>
       </footer>
     </div>
